@@ -1,0 +1,27 @@
+node_modules/
+obj
+bin
+.idea
+*.iml
+.vscode/
+.npm
+
+.DS_Store
+
+logs
+*.log*
+reports/
+target/
+dist/
+node_modules
+build
+coverage
+TestResults
+test-results
+test-results
+playwright-report
+blob-report
+playwright/.cache
+
+# aws cdk
+cdk.out
