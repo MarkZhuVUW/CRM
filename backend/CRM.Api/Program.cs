@@ -25,23 +25,13 @@ builder.Services.AddScoped<ISalesOpportunityService, SalesOpportunityService>();
 var app = builder.Build();
 
 
-// Apply database migrations
-using (var scope = app.Services.CreateScope())
+builder.Services.AddCors(options =>
 {
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<CrmDbContext>();
-        context.Database.Migrate(); // This applies any pending migrations
-    }
-    catch (Exception ex)
-    {
-        // Log the error or handle it as necessary
-        // You can use a logging service or just log to the console for simplicity
-        Console.WriteLine($"An error occurred while migrating the database: {ex.Message}");
-    }
-}
-
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:5173") // Your frontend URL
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

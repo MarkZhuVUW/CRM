@@ -1,9 +1,0 @@
-﻿## how to build and run code
-
-## Assumptions 
-1. use .Net 8, entity framework
-2. use MVC pattern. have controllers, services, daos(not repository), dtos and model classes where controller does error handling, service handles business logic, dao handles database access. dto transfers data in controllers and services. model classes are returned from dao.
-3. hardcode 20 customers and 40 sales opportunities
-4. apis should follow restful and openapi specs. For customers: /api/customers/:customerId. For sales opportunities: /api/customers/:customerId/salesopportunities.
-5. id for customer and sales opportunities should be UUID instead of int.
-6. your GET apis should be paginated. When calling the api from frontend, user should be able to filter or sort by customer name or status.

@@ -1,19 +1,13 @@
-# Solution Architecture
-
-![SOLUTION-DIAGRAM](https://github.com/user-attachments/assets/3fd86ea3-6f87-4174-8391-a50ae3529819)
 
 # Code Structure
 
 ```bash
-> .github - Github Actions CICD Pipeline
-    | cd.yml - continuous deployment workflow
-    | ci.yml - continuous integration workflow
-> backend - Node & Express & MongoDB code
+> backend - .Net 8 & unit tests
     | CRM.Api - .Net 8 backend
     | CRM.Api.Tests - backend unit tests with MSTest
 > e2eTests - playwright e2e tests(chrome only)
     | .env - local playwright configs
-> frontend - Vite React
+> frontend - Vite, React, Mui 5
     | .env local frontend config/creds
     | package.json - frontend dependencies
 > scripts
@@ -45,6 +39,13 @@ nvm install 20.11.1
 nvm use 20.11.1
 ```
 
+## Install dotnet
+1. dotnet cli
+2. dotnet ef
+```bash
+dotnet tool install --global dotnet-ef
+```
+
 ## setup frontend react project
 
 ```bash
@@ -52,7 +53,7 @@ cd ./frontend
 npm install
 ```
 
-## setup backend node project
+## setup backend project
 
 ```bash
 cd ../backend
@@ -74,7 +75,7 @@ brew install docker
 
 ---
 
-How to run frontend react, backend node, mongodb in dev mode or as docker containers
+How to run frontend react, backend, database locally
 
 ## 1. Run postgres (docker-compose)
 

@@ -1,4 +1,4 @@
-export { AuthProvider, useAuth } from "./AuthProvider";
+export { CustomerProvider, useCustomer } from "./CustomerProvider";
 export { ErrorProvider, useError } from "./ErrorProvider";
 export {
   LocalStorageProvider,

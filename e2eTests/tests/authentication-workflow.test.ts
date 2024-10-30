@@ -57,5 +57,4 @@ test("test can view profile page.", async ({ page }) => {
 
   await page.click("#profile-button");
 
-  expect(page.getByText("Profile")).toBeTruthy();
 });

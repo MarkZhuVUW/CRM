@@ -5,7 +5,6 @@ bin
 *.iml
 .vscode/
 .npm
-
 .DS_Store
 
 logs

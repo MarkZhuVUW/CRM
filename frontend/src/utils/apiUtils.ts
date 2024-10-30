@@ -46,77 +46,45 @@ export const handleError = (error: any): APIError => {
 export async function get<T extends BaseGetRequest, V extends BaseGetResponse>(
   request: T,
 ): Promise<V> {
-  try {
-    const { url, options } = request;
-    const response: AxiosResponse<V> = await axios.get<V>(url, options);
-    return { data: response.data } as V;
-  } catch (error) {
-    console.log(error);
-    const apiError = handleError(error);
-
-    return { data: "", error: apiError } as V;
-  }
+  const { url, options } = request;
+  const response: AxiosResponse<V> = await axios.get<V>(url, options);
+  return { data: response.data } as V;
 }
 
 export async function post<
   T extends BasePostRequest,
   V extends BasePostResponse,
 >(request: T): Promise<V> {
-  try {
-    const { url, data, options } = request;
-    const response: AxiosResponse<V> = await axios.post<V>(url, data, options);
-    return { data: response.data } as V;
-  } catch (error) {
-    console.log(error);
-    const apiError = handleError(error);
-    return { data: "", error: apiError } as V;
-  }
+  const { url, data, options } = request;
+  const response: AxiosResponse<V> = await axios.post<V>(url, data, options);
+  return { data: response.data } as V;
 }
 
 export async function del<
   T extends BaseDeleteRequest,
   V extends BaseDeleteResponse,
 >(request: T): Promise<V> {
-  try {
-    const { url, options } = request;
-    const response: AxiosResponse<V> = await axios.delete<V>(url, options);
+  const { url, options } = request;
+  const response: AxiosResponse<V> = await axios.delete<V>(url, options);
 
-    return {
-      data: response.data,
-    } as V;
-  } catch (error) {
-    console.log(error);
-    const apiError = handleError(error);
-
-    return { data: "", error: apiError } as V;
-  }
+  return {
+    data: response.data,
+  } as V;
 }
 
 export async function put<T extends BasePutRequest, V extends BasePutResponse>(
   request: T,
 ): Promise<V> {
-  try {
-    const { url, data, options } = request;
-    const response: AxiosResponse<V> = await axios.put<V>(url, data, options);
-    return { data: response.data } as V;
-  } catch (error) {
-    console.log(error);
-    const apiError = handleError(error);
-    return { data: "", error: apiError } as V;
-  }
+  const { url, data, options } = request;
+  const response: AxiosResponse<V> = await axios.put<V>(url, data, options);
+  return { data: response.data } as V;
 }
 
 export async function patch<
   T extends BasePatchRequest,
   V extends BasePatchResponse,
 >(request: T): Promise<V> {
-  try {
-    const { url, options } = request;
-    const response: AxiosResponse<V> = await axios.patch<V>(url, options);
-    return { data: response.data } as V;
-  } catch (error) {
-    console.log(error);
-    const apiError = handleError(error);
-    return { data: "", error: apiError } as V;
-  }
+  const { url, options } = request;
+  const response: AxiosResponse<V> = await axios.patch<V>(url, options);
+  return { data: response.data } as V;
 }
