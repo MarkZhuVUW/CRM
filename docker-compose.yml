@@ -8,31 +8,32 @@ services:
     ports:
       - "2345:5432"
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=test
+      
     volumes:
     - type: volume
       source: POSTGRES_DATA
       target: /data/postgresdb
     networks:
-      - CRM
+      - DATABASE
   pgadmin:
     image: dpage/pgadmin4
     env_file:
       - ./.env
     environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}  
+      - PGADMIN_DEFAULT_EMAIL=user-name@domain-name.com
+      - PGADMIN_DEFAULT_PASSWORD=pgadminpassword  
     depends_on:
       - postgres
     ports:
       - "8888:80"
     networks:
-      - CRM
+      - DATABASE
 networks:
-  CRM-APP:
-    name: CRM-APP
+  DATABASE:
+    name: DATABASE
 volumes:
   POSTGRES_DATA:
     name: POSTGRES_DATA

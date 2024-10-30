@@ -9,21 +9,18 @@
     | cd.yml - continuous deployment workflow
     | ci.yml - continuous integration workflow
 > backend - Node & Express & MongoDB code
-    | .env local node config/creds
-    | package.json - backend dependencies
+    | CRM.Api - .Net 8 backend
+    | CRM.Api.Tests - backend unit tests with MSTest
 > e2eTests - playwright e2e tests(chrome only)
     | .env - local playwright configs
 > frontend - Vite React
     | .env local frontend config/creds
     | package.json - frontend dependencies
-> infrastructure AWS CDK TypeScript
-    | package.json - AWS CDK dependencies
-> scripts - useful scripts for local dev, CI and CD
+> scripts
+    | start.sh - script to spin up postgres as docker container locally
 .env - MONGODB local config/creds
-docker-compose-ci.yml - docker-compose for CI environment
-docker-compose-prod.yml - docker-compose for PROD environment
-docker-compose.yml - docker-compose for LOCAL DEV environment
-Dockerfile - Frontend & backend App docker container
+docker-compose.yml - docker-compose for LOCAL environment
+Dockerfile - postgres & pgadmin docker container
 ```
 
 # Important: How to set up local development environment
@@ -48,12 +45,6 @@ nvm install 20.11.1
 nvm use 20.11.1
 ```
 
-## Install nodemon globally
-
-```bash
-npm install -g nodemon
-```
-
 ## setup frontend react project
 
 ```bash
@@ -65,7 +56,8 @@ npm install
 
 ```bash
 cd ../backend
-npm install
+dotnet build CRM.Api
+dotnet build CRM.Api.Tests
 ```
 
 ## Install Docker Desktop
@@ -84,18 +76,22 @@ brew install docker
 
 How to run frontend react, backend node, mongodb in dev mode or as docker containers
 
-## 1. Run mongodb (docker-compose)
+## 1. Run postgres (docker-compose)
 
 Run this from Git Bash if you use Windows
 
 ```bash
-# In a new shell, and keep this shell opened
-cd ./backend
-npm run start:dep
+# you need to use a terminal that has sh command
+cd ./scripts
+sh start.sh
 ```
 
-#Verify the env,
-Open http://localhost:8080/db/admin/ in your browser, and login with dev/dev
+Open http://localhost:8888/ Login with user-name@domain-name.com/pgadminpassword
+Register server:
+Server name: test
+Name: postgres
+User name: postgres
+Password: postgres
 
 ## 2. Run frontend react
 
@@ -104,37 +100,12 @@ cd ./frontend
 npm run dev
 ```
 
-## 3. Spin up database through docker compose.
+## 3. backend
 
 ```bash
 cd ./backend
 npm run start:dep
-# (starts database docker containers)
 ```
-
-## 4. Run backend node
-
-Prerequisite: please do step 3 before running backend node.
-
-```bash
-cd ./backend
-npm run start:dev
-# (starts node server in development mode at `localhost:3000`)
-```
-
-## MongoDB
-
-## Login to MongoDB
-
-1. default username: devroot
-1. default password: devroot
-1. default database: test
-
-## Login to MongoDB Admin Portal
-
-http://localhost:8080/db/admin/
-
-Username: `dev`, Password:`dev`
 
 # How to test the code
 
@@ -145,17 +116,13 @@ Username: `dev`, Password:`dev`
 
 ## backend unit tests
 
-1. `cd ./backend`
-2. `npm test`
+1. `cd ./backend/CRM.Api.Tests`
+2. `dotnet test`
 
 You can also manually test APIs with swagger UI
 
 1. go to http://localhost:3000/api/api-docs
 2. view and call apis for testing
-
-## Testing AWS CDK infrastructure as code
-
-You need to reachout to Mark(mzhu929) for giving you permission to access AWS console and deploying stacks as this is his personal AWS account.
 
 ## Browser end-to-end tests
 
@@ -176,8 +143,6 @@ under project root folder:
 1. `cd e2eTests`
 2. `npm run test:e2e`
 
-If you raise a pr, Github Actions will trigger the `./github/workflow/ci.yml` workflow which runs all automated tests
-
 # Q & A
 
 ### 1. sh command not found running npm commands
@@ -189,11 +154,3 @@ If you raise a pr, Github Actions will trigger the `./github/workflow/ci.yml` wo
 ##### A: Please review `Important: How to set up local development environment` section and install docker desktop.
 
 ##### A: Please make sure you use Git Bash to run the command if you are on Windows
-
-### 3. For AWS CDK code getting error when running `npm run deploy-dev`
-
-##### A: See `testing AWS CDK infrastructure as code` section for details
-
-### 4. How do I access latest deployed website
-
-##### A: We provision new EC2 instances if we have infrastructure change. Need to go to github actions to grab the latest working frontend url. Get it from the latest successful `CD` build from Github Actions

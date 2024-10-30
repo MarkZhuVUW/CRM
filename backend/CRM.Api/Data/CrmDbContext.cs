@@ -10,6 +10,8 @@ namespace CRM.Api.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Customer>().ToTable("customer");
+        modelBuilder.Entity<SalesOpportunity>().ToTable("sales_opportunity");
         
         // Configure one-to-many relationship
         modelBuilder.Entity<SalesOpportunity>()

@@ -1,5 +1,8 @@
-﻿namespace CRM.Api.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CRM.Api.Models
 {
+    [Table("sales_opportunity")]
     public class SalesOpportunity
     {
         public Guid Id { get; init; }
