@@ -5,13 +5,26 @@ import {
   BaseGetResponse,
 } from "../ErrorProvider";
 
+// Enums for Customer Status and Sales Opportunity Status
+export enum CustomerStatus {
+  Active = "Active",
+  NonActive = "Non Active",
+  Lead = "Lead",
+}
+
+export enum SalesOpportunityStatus {
+  New = "New",
+  ClosedWon = "Closed Won",
+  ClosedLost = "Closed Lost",
+}
+
 // Customer Interface
 export interface Customer {
   id: string;
   name: string;
   email: string;
   phoneNumber: string;
-  status: string; // "Active", "Non-Active", "Lead"
+  status: CustomerStatus; 
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,7 +34,7 @@ export interface SalesOpportunity {
   id: string;
   customerId: string;
   name: string;
-  status: string; // "New", "Closed Won", "Closed Lost"
+  status: SalesOpportunityStatus;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,11 +45,14 @@ export interface PaginatedResponse<T> {
   totalCount: number;
 }
 
-// Get Customers Request and Response
+export interface CustomerFilter {
+  status?: CustomerStatus; 
+}
+
 export interface GetCustomersRequest extends BaseGetRequest {
   pageNumber?: number;
   pageSize?: number;
-  filter?: string;
+  filter?: CustomerFilter; 
   sort?: string;
 }
 
@@ -44,14 +60,12 @@ export interface GetCustomersResponse extends BaseGetResponse {
   data: PaginatedResponse<Customer>;
 }
 
-// Get Sales Opportunities Request and Response
 export interface GetSalesOpportunitiesRequest extends BaseGetRequest {}
 
 export interface GetSalesOpportunitiesResponse extends BaseGetResponse {
   data: PaginatedResponse<SalesOpportunity>;
 }
 
-// Put Customer Request and Response
 export interface CustomerPutRequest extends BasePutRequest {
   data: Customer;
 }
@@ -62,7 +76,6 @@ export interface CustomerPutResponse extends BasePutResponse {
   };
 }
 
-// Put Sales Opportunity Request and Response
 export interface SalesOpportunityPutRequest extends BasePutRequest {
   data: SalesOpportunity;
 }

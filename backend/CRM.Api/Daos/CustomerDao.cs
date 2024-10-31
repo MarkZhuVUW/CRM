@@ -1,7 +1,9 @@
 ﻿using CRM.Api.Context;
+using CRM.Api.Dao;
+using CRM.Api.DTOs;
 using CRM.Api.Models;
 
-namespace CRM.Api.Dao
+namespace CRM.Api.Daos
 {
     public class CustomerDao : ICustomerDao
     {
@@ -12,25 +14,45 @@ namespace CRM.Api.Dao
             _context = context;
         }
 
-        public IEnumerable<Customer> GetCustomers(int pageNumber, int pageSize, string filter, string sort)
+        public IEnumerable<Customer> GetCustomers(int pageNumber, int pageSize, CustomerFilter filter, string sort)
         {
             var customers = _context.Customers.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                customers = customers.Where(c => c.Name.Contains(filter) || c.Status.Contains(filter));
-            }
 
+            if (!string.IsNullOrWhiteSpace(filter.Name))
+            {
+                customers = customers.Where(c => c.Name.Contains(filter.Name));
+            }
+            
+            customers = customers.Where(c => c.Status == filter.Status);
             customers = sort switch
             {
                 "name" => customers.OrderBy(c => c.Name),
                 "status" => customers.OrderBy(c => c.Status),
-                _ => customers.OrderBy(c => c.CreatedAt)
+                _ => customers
             };
 
+            
             return customers.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            
         }
+        public int GetTotalCount(CustomerFilter filter)
+        {
+            var query = _context.Customers.AsQueryable();
+            
+            if (!string.IsNullOrWhiteSpace(filter.Name))
+            {
+                query = query.Where(c => c.Name.Contains(filter.Name));
+            }
 
+            if (filter.Status != null)
+            {
+                query = query.Where(c => c.Status == filter.Status);
+            }
+            
+
+            return query.Count();
+        }
         public Customer? GetCustomerById(Guid id) => _context.Customers.Find(id);
 
         public void UpdateCustomer(Customer customer)

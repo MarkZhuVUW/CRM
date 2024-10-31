@@ -6,5 +6,4 @@ public interface ISalesOpportunityService
 {
     IEnumerable<SalesOpportunityDto> GetSalesOpportunities(Guid customerId);
     void UpdateSalesOpportunity(string pathCustomerId, string pathOpportunityId, SalesOpportunityDto opportunityDto);
-    SalesOpportunityDto GetSalesOpportunityById(Guid id);
 }

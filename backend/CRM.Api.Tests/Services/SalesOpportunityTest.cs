@@ -1,5 +1,6 @@
 ﻿using CRM.Api.Dao;
 using CRM.Api.DTOs;
+
 using CRM.Api.Exceptions;
 using CRM.Api.Models;
 using CRM.Api.Services;
@@ -30,8 +31,8 @@ public class SalesOpportunityServiceTest
         var customerId = Guid.NewGuid();
         var opportunities = new List<SalesOpportunity>
         {
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "Open", CustomerId = customerId },
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "Closed", CustomerId = customerId }
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "New", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "Closed Won", CustomerId = customerId }
         };
         _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities);
 
@@ -49,7 +50,7 @@ public class SalesOpportunityServiceTest
     {
         // Given
         var opportunityId = Guid.NewGuid();
-        var opportunity = new SalesOpportunity { Id = opportunityId, Name = "Opportunity 1", Status = "Open" };
+        var opportunity = new SalesOpportunity { Id = opportunityId, Name = "Opportunity 1", Status = "New" };
         _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunityById(opportunityId)).Returns(opportunity);
 
         // When
@@ -80,7 +81,7 @@ public class SalesOpportunityServiceTest
         // Given
         var customerId = Guid.NewGuid();
         var opportunityId = Guid.NewGuid();
-        var opportunityDto = new SalesOpportunityDto { Id = opportunityId, Name = "Updated Opportunity", Status = "Open", CustomerId = customerId };
+        var opportunityDto = new SalesOpportunityDto { Id = opportunityId, Name = "Updated Opportunity", Status = "New", CustomerId = customerId };
 
         _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunityById(opportunityId)).Returns(new SalesOpportunity { Id = opportunityId, CustomerId = customerId });
 
@@ -98,7 +99,7 @@ public class SalesOpportunityServiceTest
         // Given
         var customerId = Guid.NewGuid();
         var opportunityId = Guid.NewGuid();
-        var opportunityDto = new SalesOpportunityDto { Id = opportunityId, Name = "Opportunity", Status = "Open", CustomerId = customerId };
+        var opportunityDto = new SalesOpportunityDto { Id = opportunityId, Name = "Opportunity", Status = "New", CustomerId = customerId };
 
         _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunityById(opportunityId)).Returns((SalesOpportunity)null);
 
@@ -115,7 +116,7 @@ public class SalesOpportunityServiceTest
         // Given
         var customerId = Guid.NewGuid();
         var opportunityId = Guid.NewGuid();
-        var opportunityDto = new SalesOpportunityDto { Id = opportunityId, Name = "", Status = "InvalidStatus", CustomerId = customerId };
+        var opportunityDto = new SalesOpportunityDto { Id = opportunityId, Name = "", Status = "New", CustomerId = customerId };
 
         // When
         _salesOpportunityService.UpdateSalesOpportunity(customerId.ToString(), opportunityId.ToString(), opportunityDto);
@@ -129,7 +130,7 @@ public class SalesOpportunityServiceTest
     {
         // Given
         var opportunityId = Guid.NewGuid();
-        var opportunityDto = new SalesOpportunityDto { Id = Guid.NewGuid(), Name = "Opportunity", Status = "Open", CustomerId = Guid.NewGuid() };
+        var opportunityDto = new SalesOpportunityDto { Id = Guid.NewGuid(), Name = "Opportunity", Status = "New", CustomerId = Guid.NewGuid() };
 
         // When
         _salesOpportunityService.UpdateSalesOpportunity(Guid.NewGuid().ToString(), opportunityId.ToString(), opportunityDto);
@@ -145,8 +146,8 @@ public class SalesOpportunityServiceTest
         var customerId = Guid.NewGuid();
         var opportunities = new List<SalesOpportunity>
         {
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "Open", CustomerId = customerId },
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "Open", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "New", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "New", CustomerId = customerId },
         };
 
         _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities);
@@ -156,7 +157,7 @@ public class SalesOpportunityServiceTest
 
         // Then
         Assert.AreEqual(2, result.Count);
-        Assert.IsTrue(result.All(so => so.Status == "Open"));
+        Assert.IsTrue(result.All(so => so.Status == "New"));
     }
 
     [TestMethod]
@@ -180,7 +181,7 @@ public class SalesOpportunityServiceTest
         var customerId = Guid.NewGuid();
         var opportunities = new List<SalesOpportunity>
         {
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "Open", CustomerId = customerId }
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "New", CustomerId = customerId }
         };
 
         _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities);
@@ -200,8 +201,8 @@ public class SalesOpportunityServiceTest
         var customerId = Guid.NewGuid();
         var opportunities = new List<SalesOpportunity>
         {
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "Open", CustomerId = customerId },
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "Closed", CustomerId = customerId }
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "New", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "Closed Lost", CustomerId = customerId }
         };
 
         _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities);
@@ -221,11 +222,11 @@ public class SalesOpportunityServiceTest
         var customerId = Guid.NewGuid();
         var opportunities = new List<SalesOpportunity>
         {
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "Open", CustomerId = customerId },
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "Closed", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "New", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "Closed Won", CustomerId = customerId },
         };
 
-        _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities.Where(so => so.Status == "Open").ToList());
+        _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities.Where(so => so.Status == "New").ToList());
 
         // When
         var result = _salesOpportunityService.GetSalesOpportunities(customerId).ToList();
@@ -242,8 +243,8 @@ public class SalesOpportunityServiceTest
         var customerId = Guid.NewGuid();
         var opportunities = new List<SalesOpportunity>
         {
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "B Opportunity", Status = "Open", CustomerId = customerId },
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "A Opportunity", Status = "Open", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "B Opportunity", Status = "New", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "A Opportunity", Status = "New", CustomerId = customerId },
         };
 
         _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities.OrderBy(so => so.Name).ToList());
@@ -264,12 +265,12 @@ public class SalesOpportunityServiceTest
         var customerId = Guid.NewGuid();
         var opportunities = new List<SalesOpportunity>
         {
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 3", Status = "Closed", CustomerId = customerId },
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "Open", CustomerId = customerId },
-            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "Open", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 3", Status = "Closed Lost", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 1", Status = "New", CustomerId = customerId },
+            new SalesOpportunity { Id = Guid.NewGuid(), Name = "Opportunity 2", Status = "New", CustomerId = customerId },
         };
 
-        _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities.Where(so => so.Status == "Open").OrderBy(so => so.Name).ToList());
+        _salesOpportunityDaoMock.Setup(x => x.GetSalesOpportunities(customerId)).Returns(opportunities.Where(so => so.Status == "New").OrderBy(so => so.Name).ToList());
 
         // When
         var result = _salesOpportunityService.GetSalesOpportunities(customerId).ToList();

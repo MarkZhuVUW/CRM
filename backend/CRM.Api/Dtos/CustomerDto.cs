@@ -1,4 +1,6 @@
-﻿namespace CRM.Api.DTOs
+﻿
+
+namespace CRM.Api.DTOs
 {
     public class CustomerDto
     {

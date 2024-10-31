@@ -37,12 +37,12 @@ namespace CRM.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<CustomerDto>> GetCustomers(int pageNumber = 1, int pageSize = 10, string filter = "", string sort = "")
+        public ActionResult<CustomerGetResponse> GetCustomers(int pageNumber = 1, int pageSize = 10, CustomerFilter filter = null, string sort = "")
         {
             try
             {
-                var customers = _customerService.GetCustomers(pageNumber, pageSize, filter, sort);
-                return Ok(customers);
+                var customersResponse = _customerService.GetCustomers(pageNumber, pageSize, filter, sort);
+                return Ok(customersResponse);
             } catch (NotFoundException e)
             {
                 _logger.LogError(e, "");

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace CRM.Api.Models
 {
     
@@ -10,7 +11,7 @@ namespace CRM.Api.Models
         public string Name { get; init; }
         public string Email { get; init; }
         public string PhoneNumber { get; init; }
-        public string Status { get; init; } // "Active", "Non-Active", "Lead"
+        public string Status { get; init; }
         public DateTime CreatedAt { get; init; }
         public DateTime UpdatedAt { get; init; }
         // Navigation property for related SalesOpportunities

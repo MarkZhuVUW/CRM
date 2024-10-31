@@ -2,6 +2,7 @@
 using CRM.Api.DTOs;
 using CRM.Api.Exceptions;
 using CRM.Api.Models;
+using Microsoft.Extensions.Logging;
 
 namespace CRM.Api.Services
 {
@@ -18,18 +19,28 @@ namespace CRM.Api.Services
 
         public IEnumerable<SalesOpportunityDto> GetSalesOpportunities(Guid customerId)
         {
+            _logger.LogInformation("GetSalesOpportunities started with: customerId={CustomerId}", customerId);
+            
             var opportunities = _salesOpportunityDao.GetSalesOpportunities(customerId);
-            return opportunities.Select(so => new SalesOpportunityDto 
+            var opportunityDtos = opportunities.Select(so => new SalesOpportunityDto 
             { 
-                Id = so.Id, 
-                Name = so.Name, 
-                Status = so.Status, 
-                CustomerId = so.CustomerId 
-            });
+                Id = so.Id,
+                Name = so.Name,
+                Status = so.Status,
+                CustomerId = so.CustomerId,
+                CreatedAt = so.CreatedAt, 
+                UpdatedAt = so.UpdatedAt
+            }).ToList();
+
+            _logger.LogInformation("GetSalesOpportunities completed with result: {@OpportunityDtos}", opportunityDtos);
+            return opportunityDtos;
         }
 
         public void UpdateSalesOpportunity(string pathCustomerId, string pathOpportunityId, SalesOpportunityDto opportunityDto)
         {
+            _logger.LogInformation("UpdateSalesOpportunity started with: pathCustomerId={PathCustomerId}, pathOpportunityId={PathOpportunityId}, opportunityDto={@OpportunityDto}",
+                pathCustomerId, pathOpportunityId, opportunityDto);
+
             var validationErrors = GetValidationErrors(opportunityDto);
             if (!Guid.TryParse(pathCustomerId, out var parsedPathCustomerId) || !Guid.TryParse(pathOpportunityId, out var parsedPathOpportunityId))
             {
@@ -44,7 +55,7 @@ namespace CRM.Api.Services
                     pathCustomerId + " pathOpportunityId = " + 
                     pathOpportunityId + " dto = " + 
                     opportunityDto
-                    );
+                );
             }
             if (validationErrors.Count > 0)
             {
@@ -64,26 +75,34 @@ namespace CRM.Api.Services
                 Status = opportunityDto.Status,
                 CustomerId = opportunityDto.CustomerId,
                 CreatedAt = opportunity.CreatedAt, 
-                UpdatedAt = DateTime.Now 
+                UpdatedAt = DateTime.UtcNow 
             });
+
+            _logger.LogInformation("UpdateSalesOpportunity completed successfully for opportunityId={OpportunityId}", opportunityDto.Id);
         }
 
         public SalesOpportunityDto GetSalesOpportunityById(Guid id)
         {
+            _logger.LogInformation("GetSalesOpportunityById started with: id={Id}", id);
+
             var salesOpportunity = _salesOpportunityDao.GetSalesOpportunityById(id);
             if (salesOpportunity == null)
             {
                 throw new NotFoundException("Sales Opportunity not found: " + id);
             }
 
-            return new SalesOpportunityDto
+            var opportunityDto = new SalesOpportunityDto
             {
                 Id = salesOpportunity.Id,
                 Name = salesOpportunity.Name,
                 Status = salesOpportunity.Status,
-                CreatedAt = salesOpportunity.CreatedAt,
+                CustomerId = salesOpportunity.CustomerId,
+                CreatedAt = salesOpportunity.CreatedAt, 
                 UpdatedAt = salesOpportunity.UpdatedAt
             };
+
+            _logger.LogInformation("GetSalesOpportunityById completed with result: {@OpportunityDto}", opportunityDto);
+            return opportunityDto;
         }
 
         private static List<string> GetValidationErrors(SalesOpportunityDto opportunityDto)
@@ -94,20 +113,7 @@ namespace CRM.Api.Services
             {
                 validationErrors.Add("Sales Opportunity name cannot be empty.");
             }
-
-            if (string.IsNullOrWhiteSpace(opportunityDto.Status) || !IsValidStatus(opportunityDto.Status))
-            {
-                validationErrors.Add("Invalid status. Allowed values: Open, Closed, Pending.");
-            }
-
             return validationErrors;
-        }
-
-        private static bool IsValidStatus(string status)
-        {
-            // Validate if the status is one of the allowed values
-            var validStatuses = new[] { "Open", "Closed", "Pending" };
-            return validStatuses.Contains(status);
         }
     }
 }

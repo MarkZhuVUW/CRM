@@ -4,7 +4,7 @@ namespace CRM.Api.Services;
 
 public interface ICustomerService
 {
-    IEnumerable<CustomerDto> GetCustomers(int pageNumber, int pageSize, string filter, string sort);
+    CustomerGetResponse GetCustomers(int pageNumber, int pageSize, CustomerFilter filter, string sort);
     CustomerDto GetCustomerById(Guid id);
     void UpdateCustomer(string pathCustomerId, CustomerDto customerDto);
 }

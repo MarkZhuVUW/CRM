@@ -65,7 +65,7 @@ const CustomerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   const getCustomers = async (
     pageNumber: number = 1,
-    pageSize: number = 10,
+    pageSize: number = 5,
     filter: string = "",
     sort: string = "",
   ): Promise<PaginatedResponse<Customer>> => {

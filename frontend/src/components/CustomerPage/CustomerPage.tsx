@@ -12,7 +12,7 @@ export const CustomerPage = () => {
   const [loadingCustomers, setLoadingCustomers] = useState(true);
   const [loadingSalesOpportunities, setLoadingSalesOpportunities] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(10); // Fixed page size
+  const [pageSize] = useState(5); // Fixed page size
 
   useEffect(() => {
     setPageTitle("Customer & Sales Opportunities");
