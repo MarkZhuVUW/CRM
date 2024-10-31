@@ -122,8 +122,8 @@ npm run start:dep
 
 You can also manually test APIs with swagger UI
 
-1. go to http://localhost:3000/api/api-docs
-2. view and call apis for testing
+1. spin up backend
+2. access `http://localhost:5106/swagger/index.html`
 
 ## Browser end-to-end tests
 
