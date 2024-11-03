@@ -1,5 +1,4 @@
 import { CssBaseline } from "@mui/material";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import {
   CustomerProvider,
   ErrorProvider,
@@ -12,7 +11,9 @@ const App = () => (
     <ThemeProvider>
       <CssBaseline />
       <ErrorProvider>
-        <RouteProvider />
+        <CustomerProvider>
+          <RouteProvider />
+        </CustomerProvider>
       </ErrorProvider>
     </ThemeProvider>
   </LocalStorageProvider>

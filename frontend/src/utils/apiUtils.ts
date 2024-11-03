@@ -43,48 +43,30 @@ export const handleError = (error: any): APIError => {
   return { message: "An unknown error occurred.", code: 520 };
 };
 
-export async function get<T extends BaseGetRequest, V extends BaseGetResponse>(
+export async function get<T extends BaseGetRequest>(
   request: T,
-): Promise<V> {
+): Promise<AxiosResponse> {
   const { url, options } = request;
-  const response: AxiosResponse<V> = await axios.get<V>(url, options);
-  return { data: response.data } as V;
+  return await axios.get(url, options);
 }
 
-export async function post<
-  T extends BasePostRequest,
-  V extends BasePostResponse,
->(request: T): Promise<V> {
-  const { url, data, options } = request;
-  const response: AxiosResponse<V> = await axios.post<V>(url, data, options);
-  return { data: response.data } as V;
-}
-
-export async function del<
-  T extends BaseDeleteRequest,
-  V extends BaseDeleteResponse,
->(request: T): Promise<V> {
-  const { url, options } = request;
-  const response: AxiosResponse<V> = await axios.delete<V>(url, options);
-
-  return {
-    data: response.data,
-  } as V;
-}
-
-export async function put<T extends BasePutRequest, V extends BasePutResponse>(
+export async function post<T extends BasePostRequest>(
   request: T,
-): Promise<V> {
+): Promise<AxiosResponse> {
   const { url, data, options } = request;
-  const response: AxiosResponse<V> = await axios.put<V>(url, data, options);
-  return { data: response.data } as V;
+  return await axios.post(url, data, options);
 }
 
-export async function patch<
-  T extends BasePatchRequest,
-  V extends BasePatchResponse,
->(request: T): Promise<V> {
-  const { url, options } = request;
-  const response: AxiosResponse<V> = await axios.patch<V>(url, options);
-  return { data: response.data } as V;
+export async function put<T extends BasePutRequest>(
+  request: T,
+): Promise<AxiosResponse> {
+  const { url, data, options } = request;
+  return await axios.put(url, data, options);
+}
+
+export async function patch<T extends BasePatchRequest>(
+  request: T,
+): Promise<AxiosResponse> {
+  const { url, data, options } = request;
+  return await axios.patch(url, data, options);
 }

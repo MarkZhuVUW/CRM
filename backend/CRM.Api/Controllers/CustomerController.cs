@@ -19,55 +19,70 @@ namespace CRM.Api.Controllers
         }
 
         [HttpGet("{customerId}")]
-        public ActionResult<CustomerDto> GetCustomer(Guid customerId)
+        public async Task<ActionResult<CustomerDto>> GetCustomer(Guid customerId)
         {
             try
             {
-                var customer = _customerService.GetCustomerById(customerId);
+                var customer = await _customerService.GetCustomerById(customerId);
                 return Ok(customer);
-            } catch (NotFoundException e)
+            }
+            catch (NotFoundException e)
             {
-                _logger.LogError(e, "");
+                _logger.LogError(e, "Customer with ID {CustomerId} not found", customerId);
                 return NotFound(new { Message = e.Message });
-            } catch (BadRequestException e)
+            }
+            catch (BadRequestException e)
             {
-                _logger.LogError(e, "");
+                _logger.LogError(e, "Bad request for Customer ID {CustomerId}", customerId);
                 return BadRequest(new { Message = e.Message });
             }
         }
 
         [HttpGet]
-        public ActionResult<CustomerGetResponse> GetCustomers(int pageNumber = 1, int pageSize = 10, CustomerFilter filter = null, string sort = "")
+        public async Task<ActionResult<CustomerGetResponse>> GetCustomers(
+            int pageNumber = 1, int pageSize = 10, string filter = "", string sort = "", string sortDirection = "asc")
         {
             try
             {
-                var customersResponse = _customerService.GetCustomers(pageNumber, pageSize, filter, sort);
+                var customersResponse = await _customerService.GetCustomers(pageNumber, pageSize, filter, sort, sortDirection);
                 return Ok(customersResponse);
-            } catch (NotFoundException e)
+            }
+            catch (NotFoundException e)
             {
-                _logger.LogError(e, "");
+                _logger.LogError(e, "Customers not found with pageNumber: {PageNumber}, pageSize: {PageSize}, filter: {Filter}, sort: {Sort} sortDirection: {SortDirection}",
+                    pageNumber, pageSize, filter, sort, sortDirection);
                 return NotFound(new { Message = e.Message });
-            } catch (BadRequestException e)
+            }
+            catch (BadRequestException e)
             {
-                _logger.LogError(e, "");
+                _logger.LogError(e, "Bad request for customers with pageNumber: {PageNumber}, pageSize: {PageSize}, filter: {Filter}, sort: {Sort} sortDirection: {SortDirection}",
+                    pageNumber, pageSize, filter, sort, sortDirection);
                 return BadRequest(new { Message = e.Message });
             }
         }
-
-        [HttpPut("{customerId}")]
-        public ActionResult UpdateCustomer(string customerId, CustomerDto customerDto)
+        
+        [HttpPatch("{customerId}")]
+        public async Task<ActionResult> UpdateCustomer(string customerId, [FromBody] CustomerPatchRequest requestBody)
         {
+           
             try
             {
-                _customerService.UpdateCustomer(customerId, customerDto);
+                await _customerService.UpdateCustomer(customerId, new CustomerDto
+                {
+                    Name = string.IsNullOrWhiteSpace(requestBody.Name) ? "" : requestBody.Name,
+                    Status = string.IsNullOrWhiteSpace(requestBody.Status) ? "" : requestBody.Status,
+                    PhoneNumber = string.IsNullOrWhiteSpace(requestBody.PhoneNumber) ? "" : requestBody.PhoneNumber
+                });
                 return NoContent();
-            } catch (NotFoundException e)
+            }
+            catch (NotFoundException e)
             {
-                _logger.LogError(e, "");
+                _logger.LogError(e, "Customer with ID {CustomerId} not found", customerId);
                 return NotFound(new { Message = e.Message });
-            } catch (BadRequestException e)
+            }
+            catch (BadRequestException e)
             {
-                _logger.LogError(e, "");
+                _logger.LogError(e, "Invalid patch request for Customer ID {CustomerId}", customerId);
                 return BadRequest(new { Message = e.Message });
             }
         }

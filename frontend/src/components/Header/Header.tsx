@@ -1,9 +1,6 @@
-import Person2Icon from "@mui/icons-material/Person2";
 import {
   AppBar,
-  Avatar,
-  Grid,
-  ListItemButton,
+  IconButton,
   Slide,
   Switch,
   Toolbar,
@@ -11,35 +8,42 @@ import {
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { useState } from "react";
+
+import { MuiTheme, useMuiTheme, useRoute } from "../GlobalProviders";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
-import {
-  MuiTheme,
-  useCustomer,
-  useMuiTheme,
-  useRoute,
-} from "../GlobalProviders";
 
 const Header = () => {
   const { toggleLightDarkTheme, theme } = useMuiTheme();
-
   const { pageTitle } = useRoute();
-
+  const navigate = useNavigate();
   const handleThemeSwitchClick = () => {
     toggleLightDarkTheme();
+  };
+
+  const handleGoBackButtonClick = () => {
+    navigate("/customers");
   };
 
   return (
     <AppBar>
       <Toolbar>
-        <Box flexWrap="nowrap" flexGrow="1">
-          {/* For decorative icons, set aira-hidden to true */}
-
-          <Slide direction="right" in={true} timeout={500}>
-            <Box display="flex" flexDirection="row" alignItems="center">
-              <Typography>{pageTitle}</Typography>
-            </Box>
-          </Slide>
+        <Box display="flex" flexWrap="nowrap" flexGrow="1" alignItems="center">
+          <Box display="flex" flexDirection="row" alignItems="center">
+            <Typography>{pageTitle}</Typography>
+            {pageTitle === "Sales Opportunities" && (
+              <Tooltip title="Go back to previous page.">
+                <IconButton
+                  aria-label="Go back to previous page."
+                  color="inherit"
+                  size="large"
+                  onClick={handleGoBackButtonClick}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+          </Box>
         </Box>
 
         <Box>
@@ -57,4 +61,5 @@ const Header = () => {
     </AppBar>
   );
 };
+
 export default Header;

@@ -13,15 +13,28 @@ namespace CRM.Api.Dao
             _context = context;
         }
 
-        public IEnumerable<SalesOpportunity> GetSalesOpportunities(Guid customerId)
+        public async Task<IEnumerable<SalesOpportunity>> GetSalesOpportunities(Guid customerId)
         {
-            return _context.SalesOpportunities.Where(so => so.CustomerId == customerId).ToList();
+            return await _context.SalesOpportunities
+                .Where(so => so.CustomerId == customerId)
+                .ToListAsync();
         }
-        public SalesOpportunity? GetSalesOpportunityById(Guid id) => _context.SalesOpportunities.Find(id);
-        public void UpdateSalesOpportunity(SalesOpportunity opportunity)
+
+        public async Task<SalesOpportunity?> GetSalesOpportunityById(Guid id)
+        {
+            return await _context.SalesOpportunities.FindAsync(id);
+        }
+
+        public async Task CreateSalesOpportunity(SalesOpportunity opportunity)
+        {
+            await _context.SalesOpportunities.AddAsync(opportunity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateSalesOpportunity(SalesOpportunity opportunity)
         {
             _context.SalesOpportunities.Update(opportunity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

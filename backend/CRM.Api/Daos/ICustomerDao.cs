@@ -5,10 +5,10 @@ namespace CRM.Api.Dao
 {
     public interface ICustomerDao
     {
-        IEnumerable<Customer> GetCustomers(int pageNumber, int pageSize, CustomerFilter filter, string sort);
-        Customer? GetCustomerById(Guid id);
-        void UpdateCustomer(Customer customer);
-        
-        int GetTotalCount(CustomerFilter filter);
+        Task<IEnumerable<Customer>> GetCustomers(int pageNumber, int pageSize, CustomerFilter filter, string sort, string sortDirection);
+        Task<Customer?> GetCustomerById(Guid id);
+        Task<int> GetTotalCount(CustomerFilter filter);
+        Task<bool> CustomerExists(Guid customerId);
+        Task UpdateCustomer(Customer customer);
     }
 }

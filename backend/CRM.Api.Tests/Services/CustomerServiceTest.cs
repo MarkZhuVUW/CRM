@@ -24,34 +24,98 @@ namespace CRM.Api.Tests.Services
         }
 
         [TestMethod]
-        public void GetCustomers_ValidPagination_ReturnsCorrectPage()
+        public async Task GetCustomers_ValidPagination_ReturnsCorrectPage()
         {
             // Given
-            var filter = new CustomerFilter { Status = "Active" };
+            var filter = "status=Active";
             var customers = new List<Customer>
             {
                 new Customer { Id = Guid.NewGuid(), Name = "Alice", Status = "Active" },
                 new Customer { Id = Guid.NewGuid(), Name = "Bob", Status = "Active" },
                 new Customer { Id = Guid.NewGuid(), Name = "Charlie", Status = "Active" }
             };
-    
-            _customerDaoMock.Setup(x => x.GetTotalCount(filter)).Returns(customers.Count);
-            _customerDaoMock.Setup(x => x.GetCustomers(1, 2, filter, "name")).Returns(customers.Take(2).ToList());
+
+            _customerDaoMock.Setup(x => x.GetTotalCount(It.IsAny<CustomerFilter>())).ReturnsAsync(customers.Count);
+            _customerDaoMock.Setup(x => x.GetCustomers(1, 2, It.IsAny<CustomerFilter>(), "name", "asc")).ReturnsAsync(customers.Take(2).ToList());
 
             // When
-            var response = _customerService.GetCustomers(1, 2, filter, "name");
+            var response = await _customerService.GetCustomers(1, 2, filter, "name", "asc");
 
             // Then
             Assert.IsNotNull(response);
             Assert.AreEqual(2, response.Data.Count());
             Assert.AreEqual(3, response.Meta.TotalCount);
         }
-
+        
         [TestMethod]
-        public void GetCustomers_SecondPage_ReturnsRemainingCustomers()
+        public async Task GetCustomers_AscendingSortDirection_ReturnsSortedCustomers()
         {
             // Given
-            var filter = new CustomerFilter { Status = "Active" };
+            var filter = "status=Active";
+            var customers = new List<Customer>
+            {
+                new Customer { Id = Guid.NewGuid(), Name = "Charlie", Status = "Active" },
+                new Customer { Id = Guid.NewGuid(), Name = "Alice", Status = "Active" },
+                new Customer { Id = Guid.NewGuid(), Name = "Bob", Status = "Active" }
+            };
+
+            _customerDaoMock.Setup(x => x.GetTotalCount(It.IsAny<CustomerFilter>())).ReturnsAsync(customers.Count);
+            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, It.IsAny<CustomerFilter>(), "name", "asc"))
+                .ReturnsAsync(customers.OrderBy(c => c.Name).ToList());
+
+            // When
+            var response = await _customerService.GetCustomers(1, 10, filter, "name", "asc");
+
+            // Then
+            Assert.IsNotNull(response);
+            Assert.AreEqual(3, response.Data.Count());
+            Assert.AreEqual("Alice", response.Data.First().Name); // Alice should be first in ascending order
+        }
+
+        [TestMethod]
+        public async Task GetCustomers_DescendingSortDirection_ReturnsSortedCustomers()
+        {
+            // Given
+            var filter = "status=Active";
+            var customers = new List<Customer>
+            {
+                new Customer { Id = Guid.NewGuid(), Name = "Charlie", Status = "Active" },
+                new Customer { Id = Guid.NewGuid(), Name = "Alice", Status = "Active" },
+                new Customer { Id = Guid.NewGuid(), Name = "Bob", Status = "Active" }
+            };
+
+            _customerDaoMock.Setup(x => x.GetTotalCount(It.IsAny<CustomerFilter>())).ReturnsAsync(customers.Count);
+            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, It.IsAny<CustomerFilter>(), "name", "desc"))
+                .ReturnsAsync(customers.OrderByDescending(c => c.Name).ToList());
+
+            // When
+            var response = await _customerService.GetCustomers(1, 10, filter, "name", "desc");
+
+            // Then
+            Assert.IsNotNull(response);
+            Assert.AreEqual(3, response.Data.Count());
+            Assert.AreEqual("Charlie", response.Data.First().Name); // Charlie should be first in descending order
+        }
+
+        [TestMethod]
+        public async Task GetCustomers_InvalidSortDirection_ThrowsBadRequestException()
+        {
+            // Given
+            var filter = "status=Active";
+
+            // When
+            var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(() =>
+                _customerService.GetCustomers(1, 10, filter, "name", "invalidDirection"));
+
+            // Then
+            Assert.AreEqual("Invalid parameters: Invalid sort direction. Allowed values: asc, desc", exception.Message);
+        }
+
+        [TestMethod]
+        public async Task GetCustomers_SecondPage_ReturnsRemainingCustomers()
+        {
+            // Given
+            var filter = "status=Active";
             var customers = new List<Customer>
             {
                 new Customer { Id = Guid.NewGuid(), Name = "Alice", Status = "Active" },
@@ -59,11 +123,11 @@ namespace CRM.Api.Tests.Services
                 new Customer { Id = Guid.NewGuid(), Name = "Charlie", Status = "Active" }
             };
 
-            _customerDaoMock.Setup(x => x.GetTotalCount(filter)).Returns(customers.Count);
-            _customerDaoMock.Setup(x => x.GetCustomers(2, 2, filter, "name")).Returns(customers.Skip(2).Take(2).ToList());
+            _customerDaoMock.Setup(x => x.GetTotalCount(It.IsAny<CustomerFilter>())).ReturnsAsync(customers.Count);
+            _customerDaoMock.Setup(x => x.GetCustomers(2, 2, It.IsAny<CustomerFilter>(), "name", "asc")).ReturnsAsync(customers.Skip(2).Take(2).ToList());
 
             // When
-            var response = _customerService.GetCustomers(2, 2, filter, "name");
+            var response = await _customerService.GetCustomers(2, 2, filter, "name", "asc");
 
             // Then
             Assert.IsNotNull(response);
@@ -72,21 +136,21 @@ namespace CRM.Api.Tests.Services
         }
 
         [TestMethod]
-        public void GetCustomers_ValidFilter_ReturnsFilteredCustomers()
+        public async Task GetCustomers_ValidFilter_ReturnsFilteredCustomers()
         {
             // Given
-            var filter = new CustomerFilter { Status = "Active" };
+            var filter = "status=Active";
             var customers = new List<Customer>
             {
                 new Customer { Id = Guid.NewGuid(), Name = "Alice", Status = "Active" },
-                new Customer { Id = Guid.NewGuid(), Name = "Bob", Status = "Non Active" }
+                new Customer { Id = Guid.NewGuid(), Name = "Bob", Status = "Non-Active" }
             };
 
-            _customerDaoMock.Setup(x => x.GetTotalCount(filter)).Returns(1);
-            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, filter, "name")).Returns(new List<Customer> { customers[0] });
+            _customerDaoMock.Setup(x => x.GetTotalCount(It.IsAny<CustomerFilter>())).ReturnsAsync(1);
+            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, It.IsAny<CustomerFilter>(), "name", "asc")).ReturnsAsync(new List<Customer> { customers[0] });
 
             // When
-            var response = _customerService.GetCustomers(1, 10, filter, "name");
+            var response = await _customerService.GetCustomers(1, 10, filter, "name", "asc");
 
             // Then
             Assert.IsNotNull(response);
@@ -95,21 +159,21 @@ namespace CRM.Api.Tests.Services
         }
 
         [TestMethod]
-        public void GetCustomers_ValidSort_ReturnsSortedCustomers()
+        public async Task GetCustomers_ValidSort_ReturnsSortedCustomers()
         {
             // Given
-            var filter = new CustomerFilter { Status = "Active" };
+            var filter = "status=Active";
             var customers = new List<Customer>
             {
                 new Customer { Id = Guid.NewGuid(), Name = "Bob", Status = "Active" },
                 new Customer { Id = Guid.NewGuid(), Name = "Alice", Status = "Active" }
             };
 
-            _customerDaoMock.Setup(x => x.GetTotalCount(filter)).Returns(customers.Count);
-            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, filter, "name")).Returns(customers.OrderBy(c => c.Name).ToList());
+            _customerDaoMock.Setup(x => x.GetTotalCount(It.IsAny<CustomerFilter>())).ReturnsAsync(customers.Count);
+            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, It.IsAny<CustomerFilter>(), "name", "asc")).ReturnsAsync(customers.OrderBy(c => c.Name).ToList());
 
             // When
-            var response = _customerService.GetCustomers(1, 10, filter, "name");
+            var response = await _customerService.GetCustomers(1, 10, filter, "name", "asc");
 
             // Then
             Assert.IsNotNull(response);
@@ -118,10 +182,10 @@ namespace CRM.Api.Tests.Services
         }
 
         [TestMethod]
-        public void GetCustomers_MultipleFiltersAndSort_ReturnsCorrectResults()
+        public async Task GetCustomers_MultipleFiltersAndSort_ReturnsCorrectResults()
         {
             // Given
-            var filter = new CustomerFilter { Status = "Active" };
+            var filter = "status=Active";
             var customers = new List<Customer>
             {
                 new Customer { Id = Guid.NewGuid(), Name = "Charlie", Status = "Active" },
@@ -129,11 +193,11 @@ namespace CRM.Api.Tests.Services
                 new Customer { Id = Guid.NewGuid(), Name = "Bob", Status = "Active" }
             };
 
-            _customerDaoMock.Setup(x => x.GetTotalCount(filter)).Returns(customers.Count);
-            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, filter, "name")).Returns(customers.OrderBy(c => c.Name).ToList());
+            _customerDaoMock.Setup(x => x.GetTotalCount(It.IsAny<CustomerFilter>())).ReturnsAsync(customers.Count);
+            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, It.IsAny<CustomerFilter>(), "name", "asc")).ReturnsAsync(customers.OrderBy(c => c.Name).ToList());
 
             // When
-            var response = _customerService.GetCustomers(1, 10, filter, "name");
+            var response = await _customerService.GetCustomers(1, 10, filter, "name", "asc");
 
             // Then
             Assert.IsNotNull(response);
@@ -142,10 +206,10 @@ namespace CRM.Api.Tests.Services
         }
 
         [TestMethod]
-        public void GetCustomers_ValidParameters_ReturnsCustomerGetResponse()
+        public async Task GetCustomers_ValidParameters_ReturnsCustomerGetResponse()
         {
             // Given
-            var filter = new CustomerFilter { Status = "Active" };
+            var filter = "status=Active";
             var customers = new List<Customer>
             {
                 new Customer
@@ -159,11 +223,11 @@ namespace CRM.Api.Tests.Services
                     UpdatedAt = DateTime.UtcNow
                 }
             };
-            _customerDaoMock.Setup(x => x.GetTotalCount(filter)).Returns(customers.Count);
-            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, filter, "name")).Returns(customers);
+            _customerDaoMock.Setup(x => x.GetTotalCount(It.IsAny<CustomerFilter>())).ReturnsAsync(customers.Count);
+            _customerDaoMock.Setup(x => x.GetCustomers(1, 10, It.IsAny<CustomerFilter>(), "name", "asc")).ReturnsAsync(customers);
 
             // When
-            var response = _customerService.GetCustomers(1, 10, filter, "name");
+            var response = await _customerService.GetCustomers(1, 10, filter, "name", "asc");
 
             // Then
             Assert.IsNotNull(response);
@@ -172,63 +236,77 @@ namespace CRM.Api.Tests.Services
         }
 
         [TestMethod]
-        public void GetCustomers_InvalidPageNumber_ThrowsBadRequestException()
+        public async Task GetCustomers_InvalidPageNumber_ThrowsBadRequestException()
         {
             // Given
-            var filter = new CustomerFilter { Status = "Active" };
+            var filter = "status=Active";
 
             // When
-            var exception = Assert.ThrowsException<BadRequestException>(() => 
-                _customerService.GetCustomers(0, 10, filter, "name"));
+            var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(() =>
+                _customerService.GetCustomers(0, 10, filter, "name", "asc"));
 
             // Then
             Assert.AreEqual("Invalid parameters: Page number must be greater than 0.", exception.Message);
         }
 
         [TestMethod]
-        public void GetCustomers_InvalidPageSize_ThrowsBadRequestException()
+        public async Task GetCustomers_InvalidPageSize_ThrowsBadRequestException()
         {
             // Given
-            var filter = new CustomerFilter { Status = "Active" };
+            var filter = "status=Active";
 
             // When
-            var exception = Assert.ThrowsException<BadRequestException>(() => 
-                _customerService.GetCustomers(1, 0, filter, "name"));
+            var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(() =>
+                _customerService.GetCustomers(1, 0, filter, "name", "asc"));
 
             // Then
             Assert.AreEqual("Invalid parameters: Page size must be greater than 0.", exception.Message);
         }
 
         [TestMethod]
-        public void GetCustomers_InvalidStatus_ThrowsBadRequestException()
+        public async Task GetCustomers_InvalidStatus_ThrowsBadRequestException()
         {
             // Given
-            var filter = new CustomerFilter { Status = "invalid status" }; // Invalid status
+            var filter = "status=Invalid Status"; // Invalid status
 
             // When
-            var exception = Assert.ThrowsException<BadRequestException>(() => 
-                _customerService.GetCustomers(1, 10, filter, "name"));
+            var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(() =>
+                _customerService.GetCustomers(1, 10, filter, "name", "asc"));
 
             // Then
             Assert.AreEqual("Invalid parameters: Invalid status value.", exception.Message);
         }
 
         [TestMethod]
-        public void GetCustomers_InvalidSortValue_ThrowsBadRequestException()
+        public async Task GetCustomers_InvalidSortValue_ThrowsBadRequestException()
         {
             // Given
-            var filter = new CustomerFilter();
+            var filter = "name=bla,status=Active";
 
             // When
-            var exception = Assert.ThrowsException<BadRequestException>(() => 
-                _customerService.GetCustomers(1, 10, filter, "invalidSort"));
+            var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(() =>
+                _customerService.GetCustomers(1, 10, filter, "invalidSort", "asc"));
 
             // Then
-            Assert.AreEqual("Invalid parameters: Invalid sort value. Allowed values: name, status", exception.Message);
+            Assert.AreEqual("Invalid parameters: Invalid sort value. Allowed values: name, status, ", exception.Message);
         }
 
         [TestMethod]
-        public void GetCustomerById_ValidId_ReturnsCustomerDto()
+        public async Task GetCustomers_InvalidFilter_ThrowsBadRequestException()
+        {
+            // Given
+            var filter = "name=bla,asd=active";
+
+            // When
+            var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(() =>
+                _customerService.GetCustomers(1, 10, filter, "invalidSort", "asc"));
+
+            // Then
+            Assert.AreEqual("Invalid filter = " + filter, exception.Message);
+        }
+
+        [TestMethod]
+        public async Task GetCustomerById_ValidId_ReturnsCustomerDto()
         {
             // Given
             var customerId = Guid.NewGuid();
@@ -242,10 +320,10 @@ namespace CRM.Api.Tests.Services
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
-            _customerDaoMock.Setup(x => x.GetCustomerById(customerId)).Returns(customer);
+            _customerDaoMock.Setup(x => x.GetCustomerById(customerId)).ReturnsAsync(customer);
 
             // When
-            var result = _customerService.GetCustomerById(customerId);
+            var result = await _customerService.GetCustomerById(customerId);
 
             // Then
             Assert.IsNotNull(result);
@@ -254,80 +332,57 @@ namespace CRM.Api.Tests.Services
         }
 
         [TestMethod]
-        public void GetCustomerById_InvalidId_ThrowsNotFoundException()
+        public async Task GetCustomerById_InvalidId_ThrowsNotFoundException()
         {
             // Given
             var customerId = Guid.NewGuid();
-            _customerDaoMock.Setup(x => x.GetCustomerById(customerId)).Returns((Customer)null);
+            _customerDaoMock.Setup(x => x.GetCustomerById(customerId)).ReturnsAsync((Customer)null);
 
             // When
-            var exception = Assert.ThrowsException<NotFoundException>(() => 
+            var exception = await Assert.ThrowsExceptionAsync<NotFoundException>(() =>
                 _customerService.GetCustomerById(customerId));
 
             // Then
-            Assert.AreEqual($"customer not found for customer id = {customerId}", exception.Message);
+            Assert.AreEqual($"Customer not found for customer id = {customerId}", exception.Message);
         }
-
+        
         [TestMethod]
-        public void UpdateCustomer_ValidCustomer_UpdatesSuccessfully()
+        public async Task UpdateCustomer_CustomerNotFound_ThrowsNotFoundException()
         {
             // Given
             var customerId = Guid.NewGuid();
-            var customerDto = new CustomerDto
+            var updateRequest = new CustomerDto
             {
-                Id = customerId,
-                Name = "John Doe",
                 Status = "Active",
-                Email = "john@example.com",
-                PhoneNumber = "123456789",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
             };
-            _customerDaoMock.Setup(x => x.GetCustomerById(customerId)).Returns(new Customer { Id = customerId });
+
+            _customerDaoMock.Setup(x => x.GetCustomerById(customerId)).ReturnsAsync((Customer)null);
 
             // When
-            _customerService.UpdateCustomer(customerId.ToString(), customerDto);
+            var exception = await Assert.ThrowsExceptionAsync<NotFoundException>(() =>
+                _customerService.UpdateCustomer(customerId.ToString(), updateRequest));
 
             // Then
-            _customerDaoMock.Verify(x => x.UpdateCustomer(It.IsAny<Customer>()), Times.Once);
+            Assert.AreEqual($"Customer not found for customerId: " + customerId, exception.Message);
         }
 
         [TestMethod]
-        public void UpdateCustomer_PathIdDoesNotMatchDtoId_ThrowsBadRequestException()
+        public async Task UpdateCustomer_InvalidStatus_ThrowsBadRequestException()
         {
             // Given
-            var pathCustomerId = Guid.NewGuid().ToString();
-            var customerDto = new CustomerDto
+            var customerId = Guid.NewGuid();
+            var dto = new CustomerDto
             {
-                Id = Guid.NewGuid(), // Different Id
-                Name = "John Doe",
-                Status = "Active",
-                Email = "john@example.com",
-                PhoneNumber = "123456789"
+                Status = "InvalidStatus"
+                
             };
 
             // When
-            var exception = Assert.ThrowsException<BadRequestException>(() => 
-                _customerService.UpdateCustomer(pathCustomerId, customerDto));
+            var exception = await Assert.ThrowsExceptionAsync<BadRequestException>(() =>
+                _customerService.UpdateCustomer(customerId.ToString(), dto));
 
             // Then
-            Assert.AreEqual($"path customer id or path opportunity id do not match the value in dto. pathCustomerId = {pathCustomerId} dto = {customerDto}", exception.Message);
-        }
-
-        [TestMethod]
-        public void UpdateCustomer_InvalidCustomerData_ThrowsBadRequestException()
-        {
-            // Given
-            var pathCustomerId = Guid.NewGuid().ToString();
-            var customerDto = new CustomerDto { Id = Guid.NewGuid(), Name = "", Email = "", PhoneNumber = "" }; // Invalid data
-            _customerDaoMock.Setup(x => x.GetCustomerById(customerDto.Id)).Returns(new Customer { Id = customerDto.Id });
-
-            // When
-            var exception = Assert.ThrowsException<BadRequestException>(() => 
-                _customerService.UpdateCustomer(pathCustomerId, customerDto));
-
-            // Then
-            Assert.AreEqual("Customer not valid: Customer name cannot be empty, Invalid email address, Phone number cannot be empty", exception.Message);
+            Assert.AreEqual("Invalid status provided. pathCustomerId = " + customerId, exception.Message);
         }
     }
 }

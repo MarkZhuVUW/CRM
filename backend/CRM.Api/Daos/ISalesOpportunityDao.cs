@@ -4,8 +4,9 @@ namespace CRM.Api.Dao
 {
     public interface ISalesOpportunityDao
     {
-        IEnumerable<SalesOpportunity> GetSalesOpportunities(Guid customerId);
-        void UpdateSalesOpportunity(SalesOpportunity opportunity);
-        SalesOpportunity? GetSalesOpportunityById(Guid id);
+        Task<IEnumerable<SalesOpportunity>> GetSalesOpportunities(Guid customerId);
+        Task UpdateSalesOpportunity(SalesOpportunity opportunity);
+        Task<SalesOpportunity?> GetSalesOpportunityById(Guid id);
+        Task CreateSalesOpportunity(SalesOpportunity opportunity);
     }
 }

@@ -1,9 +1,9 @@
+import { CustomerDetailsPage } from "@frontend-ui/components/CustomerDetailsPage";
 import { CustomerPage } from "@frontend-ui/components/CustomerPage";
 import { Header } from "@frontend-ui/components/Header";
 
 import { createContext, useContext, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { CustomerProvider } from "../CustomerProvider";
 
 interface RouteContext {
   pageTitle: string;
@@ -33,9 +33,17 @@ const RouteProvider = () => {
             element={
               <>
                 <Header />
-                <CustomerProvider>
-                  <CustomerPage />
-                </CustomerProvider>
+                <CustomerPage />
+              </>
+            }
+          />
+
+          <Route
+            path="/customers/:customerId/salesopportunities"
+            element={
+              <>
+                <Header />
+                <CustomerDetailsPage />
               </>
             }
           />

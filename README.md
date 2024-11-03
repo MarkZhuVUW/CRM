@@ -101,11 +101,11 @@ cd ./frontend
 npm run dev
 ```
 
-## 3. backend
+## 3. Run backend
 
 ```bash
-cd ./backend
-npm run start:dep
+cd ./backend/CRM.Api
+dotnet run
 ```
 
 # How to test the code

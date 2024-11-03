@@ -1,5 +1,4 @@
-﻿
-using CRM.Api.Models;
+﻿using CRM.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRM.Api.Context
@@ -13,35 +12,34 @@ namespace CRM.Api.Context
         {
             modelBuilder.Entity<Customer>().ToTable("customer");
             modelBuilder.Entity<SalesOpportunity>().ToTable("sales_opportunity");
-        
-            // Configure one-to-many relationship
+
             modelBuilder.Entity<SalesOpportunity>()
-                .HasOne(so => so.Customer) // Each SalesOpportunity has one Customer
-                .WithMany(c => c.SalesOpportunities) // A Customer can have many SalesOpportunities
-                .HasForeignKey(so => so.CustomerId); // Specify the foreign key property
-        
-            // Add indexes for the Customer entity
+                .HasOne(so => so.Customer)
+                .WithMany(c => c.SalesOpportunities)
+                .HasForeignKey(so => so.CustomerId);
+
+            // Add indexes for customer
             modelBuilder.Entity<Customer>()
-                .HasIndex(c => c.Name) // Index on Name for filtering and sorting
+                .HasIndex(c => c.Name) // Index on Name
                 .HasDatabaseName("IX_Customers_Name");
 
             modelBuilder.Entity<Customer>()
-                .HasIndex(c => c.Status) // Index on Status for filtering
+                .HasIndex(c => c.Status) // Index on Status
                 .HasDatabaseName("IX_Customers_Status");
 
             // Add indexes for the SalesOpportunity entity
             modelBuilder.Entity<SalesOpportunity>()
-                .HasIndex(so => so.Name) // Index on Name for filtering and sorting
+                .HasIndex(so => so.Name) // Index on Name
                 .HasDatabaseName("IX_SalesOpportunities_Name");
 
             modelBuilder.Entity<SalesOpportunity>()
-                .HasIndex(so => so.Status) // Index on Status for filtering
+                .HasIndex(so => so.Status) // Index on Status
                 .HasDatabaseName("IX_SalesOpportunities_Status");
 
             modelBuilder.Entity<SalesOpportunity>()
-                .HasIndex(so => so.CustomerId) // Index on CustomerId for joining and filtering
+                .HasIndex(so => so.CustomerId) // Index on CustomerId
                 .HasDatabaseName("IX_SalesOpportunities_CustomerId");
-        
+
             // Hardcoded GUIDs for customers
             var customerIds = new[]
             {
@@ -73,23 +71,23 @@ namespace CRM.Api.Context
             {
                 new Customer { Id = customerIds[0], Name = "John Doe", Email = "john@example.com", PhoneNumber = "1234567890", Status = "Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[1], Name = "Jane Smith", Email = "jane@example.com", PhoneNumber = "0987654321", Status = "Lead", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Customer { Id = customerIds[2], Name = "Bob Johnson", Email = "bob@example.com", PhoneNumber = "1112223333", Status = "Non Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new Customer { Id = customerIds[2], Name = "Bob Johnson", Email = "bob@example.com", PhoneNumber = "1112223333", Status = "Non-Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[3], Name = "Alice Williams", Email = "alice@example.com", PhoneNumber = "4445556666", Status = "Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[4], Name = "Charlie Brown", Email = "charlie@example.com", PhoneNumber = "7778889999", Status = "Lead", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[5], Name = "David Miller", Email = "david@example.com", PhoneNumber = "1231231234", Status = "Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Customer { Id = customerIds[6], Name = "Emma Davis", Email = "emma@example.com", PhoneNumber = "4564564567", Status = "Non Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new Customer { Id = customerIds[6], Name = "Emma Davis", Email = "emma@example.com", PhoneNumber = "4564564567", Status = "Non-Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[7], Name = "Frank Wilson", Email = "frank@example.com", PhoneNumber = "7897897890", Status = "Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[8], Name = "Grace Lee", Email = "grace@example.com", PhoneNumber = "2342342345", Status = "Lead", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Customer { Id = customerIds[9], Name = "Henry Thomas", Email = "henry@example.com", PhoneNumber = "5675675678", Status = "Non Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new Customer { Id = customerIds[9], Name = "Henry Thomas", Email = "henry@example.com", PhoneNumber = "5675675678", Status = "Non-Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[10], Name = "Isabella Moore", Email = "isabella@example.com", PhoneNumber = "8908908901", Status = "Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[11], Name = "Jack Taylor", Email = "jack@example.com", PhoneNumber = "1231234567", Status = "Lead", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Customer { Id = customerIds[12], Name = "Liam Anderson", Email = "liam@example.com", PhoneNumber = "9876543210", Status = "Non Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new Customer { Id = customerIds[12], Name = "Liam Anderson", Email = "liam@example.com", PhoneNumber = "9876543210", Status = "Non-Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[13], Name = "Mia Thomas", Email = "mia@example.com", PhoneNumber = "6543210987", Status = "Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[14], Name = "Noah Garcia", Email = "noah@example.com", PhoneNumber = "3456789012", Status = "Lead", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Customer { Id = customerIds[15], Name = "Olivia Martinez", Email = "olivia@example.com", PhoneNumber = "4567890123", Status = "Non Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new Customer { Id = customerIds[15], Name = "Olivia Martinez", Email = "olivia@example.com", PhoneNumber = "4567890123", Status = "Non-Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[16], Name = "Sophia Hernandez", Email = "sophia@example.com", PhoneNumber = "5678901234", Status = "Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[17], Name = "Lucas Lopez", Email = "lucas@example.com", PhoneNumber = "6789012345", Status = "Lead", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new Customer { Id = customerIds[18], Name = "Ethan Walker", Email = "ethan@example.com", PhoneNumber = "7890123456", Status = "Non Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new Customer { Id = customerIds[18], Name = "Ethan Walker", Email = "ethan@example.com", PhoneNumber = "7890123456", Status = "Non-Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new Customer { Id = customerIds[19], Name = "Ava Hall", Email = "ava@example.com", PhoneNumber = "8901234567", Status = "Active", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
             });
 
@@ -106,23 +104,23 @@ namespace CRM.Api.Context
                 Guid.Parse("66db1a29-c72c-4878-b89c-b1d4a949c124"),
                 Guid.Parse("1200f76e-98f4-4ac1-a83f-efc3743fc6a2"),
                 Guid.Parse("7729cdb7-10b6-4f71-b3ef-3e4f12e0be6b"),
-            
+
             };
 
             // Hardcoded data for sales opportunities
-            
+
             modelBuilder.Entity<SalesOpportunity>().HasData(new[]
             {
                 new SalesOpportunity { Id = opportunityIds[0], Name = "Opportunity 1", Status = "New", CustomerId = customerIds[0], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new SalesOpportunity { Id = opportunityIds[1], Name = "Opportunity 2", Status = "Closed Won", CustomerId = customerIds[1], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new SalesOpportunity { Id = opportunityIds[2], Name = "Opportunity 3", Status = "Closed Lost", CustomerId = customerIds[2], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new SalesOpportunity { Id = opportunityIds[1], Name = "Opportunity 2", Status = "Closed-Won", CustomerId = customerIds[1], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new SalesOpportunity { Id = opportunityIds[2], Name = "Opportunity 3", Status = "Closed-Lost", CustomerId = customerIds[2], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new SalesOpportunity { Id = opportunityIds[3], Name = "Opportunity 4", Status = "New", CustomerId = customerIds[3], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new SalesOpportunity { Id = opportunityIds[4], Name = "Opportunity 5", Status = "Closed Won", CustomerId = customerIds[4], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new SalesOpportunity { Id = opportunityIds[4], Name = "Opportunity 5", Status = "Closed-Won", CustomerId = customerIds[4], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new SalesOpportunity { Id = opportunityIds[5], Name = "Opportunity 6", Status = "New", CustomerId = customerIds[5], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new SalesOpportunity { Id = opportunityIds[6], Name = "Opportunity 7", Status ="Closed Lost", CustomerId = customerIds[6], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new SalesOpportunity { Id = opportunityIds[6], Name = "Opportunity 7", Status ="Closed-Lost", CustomerId = customerIds[6], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new SalesOpportunity { Id = opportunityIds[7], Name = "Opportunity 8", Status = "New", CustomerId = customerIds[7], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new SalesOpportunity { Id = opportunityIds[8], Name = "Opportunity 9", Status = "Closed Won", CustomerId = customerIds[8], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
-                new SalesOpportunity { Id = opportunityIds[9], Name = "Opportunity 10", Status = "Closed Won", CustomerId = customerIds[9], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new SalesOpportunity { Id = opportunityIds[8], Name = "Opportunity 9", Status = "Closed-Won", CustomerId = customerIds[8], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+                new SalesOpportunity { Id = opportunityIds[9], Name = "Opportunity 10", Status = "Closed-Won", CustomerId = customerIds[9], CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
 
             });
         }

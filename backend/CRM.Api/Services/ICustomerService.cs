@@ -4,7 +4,8 @@ namespace CRM.Api.Services;
 
 public interface ICustomerService
 {
-    CustomerGetResponse GetCustomers(int pageNumber, int pageSize, CustomerFilter filter, string sort);
-    CustomerDto GetCustomerById(Guid id);
-    void UpdateCustomer(string pathCustomerId, CustomerDto customerDto);
+    Task<CustomerGetResponse> GetCustomers(int pageNumber, int pageSize, string filter, string sort, string sortDirection);
+    Task<CustomerDto> GetCustomerById(Guid id);
+    Task<bool> CustomerExists(Guid customerId);
+    Task UpdateCustomer(string pathCustomerId, CustomerDto customerDto);
 }

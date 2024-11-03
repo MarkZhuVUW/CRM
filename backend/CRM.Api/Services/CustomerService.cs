@@ -1,7 +1,6 @@
 ﻿using CRM.Api.Dao;
 using CRM.Api.DTOs;
 using CRM.Api.Exceptions;
-using CRM.Api.Models;
 
 namespace CRM.Api.Services
 {
@@ -16,20 +15,22 @@ namespace CRM.Api.Services
             _logger = logger;
         }
 
-        public CustomerGetResponse GetCustomers(int pageNumber, int pageSize, CustomerFilter filter, string sort)
+        public async Task<CustomerGetResponse> GetCustomers(int pageNumber, int pageSize, string filter, string sort, string sortDirection)
         {
-            _logger.LogInformation("GetCustomers started with: pageNumber={PageNumber}, pageSize={PageSize}, filter={Filter}, sort={Sort}",
-                pageNumber, pageSize, filter, sort);
+            _logger.LogInformation("GetCustomers started with: pageNumber={PageNumber}, pageSize={PageSize}, filter={Filter}, sort={Sort}, sortDirection={SortDirection}",
+                pageNumber, pageSize, filter, sort, sortDirection);
 
-            var validationErrors = GetCustomerValidationErrors(pageNumber, pageSize, filter, sort);
+            var customerFilter = ParseFilter(filter);
+
+            var validationErrors = GetCustomerValidationErrors(pageNumber, pageSize, customerFilter, sort, sortDirection);
             if (validationErrors.Count > 0)
             {
                 throw new BadRequestException("Invalid parameters: " + string.Join(", ", validationErrors));
             }
 
-            var totalCount = _customerDao.GetTotalCount(filter);
-            var customers = _customerDao.GetCustomers(pageNumber, pageSize, filter, sort);
-    
+            var totalCount = await _customerDao.GetTotalCount(customerFilter);
+            var customers = await _customerDao.GetCustomers(pageNumber, pageSize, customerFilter, sort, sortDirection);
+
             var customerDtos = customers.Select(c => new CustomerDto
             {
                 Id = c.Id,
@@ -54,7 +55,35 @@ namespace CRM.Api.Services
             return response;
         }
 
-        private static List<string> GetCustomerValidationErrors(int pageNumber, int pageSize, CustomerFilter filter, string sort)
+        private static CustomerFilter ParseFilter(string filter)
+        {
+            var customerFilter = new CustomerFilter();
+            var splitFilter = filter.Split(",", StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var part in splitFilter)
+            {
+                var keyValue = part.Split("=", StringSplitOptions.RemoveEmptyEntries);
+                var key = keyValue[0];
+                var value = keyValue[1];
+
+                if (key == "name")
+                {
+                    customerFilter.Name = value;
+                }
+                else if (key == "status")
+                {
+                    customerFilter.Status = value;
+                }
+                else
+                {
+                    throw new BadRequestException("Invalid filter = " + filter);
+                }
+            }
+
+            return customerFilter;
+        }
+
+        private static List<string> GetCustomerValidationErrors(int pageNumber, int pageSize, CustomerFilter filter, string sort, string sortDirection)
         {
             var validationErrors = new List<string>();
 
@@ -68,29 +97,35 @@ namespace CRM.Api.Services
                 validationErrors.Add("Page size must be greater than 0.");
             }
 
-            var validStatuses = new[] { "Active", "Non Active", "Lead" };
+            var validStatuses = new[] { "Active", "Non-Active", "Lead" };
             if (filter.Status != null && !validStatuses.Contains(filter.Status))
             {
                 validationErrors.Add("Invalid status value.");
             }
 
-            var validSortValues = new[] { "name", "status" };
+            var validSortValues = new[] { "name", "status", "" };
             if (!validSortValues.Contains(sort))
             {
                 validationErrors.Add($"Invalid sort value. Allowed values: {string.Join(", ", validSortValues)}");
             }
 
+            var validSortDirections = new[] { "asc", "desc" };
+            if (!validSortDirections.Contains(sortDirection))
+            {
+                validationErrors.Add($"Invalid sort direction. Allowed values: {string.Join(", ", validSortDirections)}");
+            }
+
             return validationErrors;
         }
 
-        public CustomerDto GetCustomerById(Guid id)
+        public async Task<CustomerDto> GetCustomerById(Guid id)
         {
             _logger.LogInformation("GetCustomerById started with parameter: id={Id}", id);
 
-            var customer = _customerDao.GetCustomerById(id);
+            var customer = await _customerDao.GetCustomerById(id);
             if (customer == null)
             {
-                throw new NotFoundException("customer not found for customer id = " + id);
+                throw new NotFoundException("Customer not found for customer id = " + id);
             }
 
             var customerDto = new CustomerDto
@@ -107,72 +142,55 @@ namespace CRM.Api.Services
             _logger.LogInformation("GetCustomerById completed with result: {@CustomerDto}", customerDto);
             return customerDto;
         }
-
-        public void UpdateCustomer(string pathCustomerId, CustomerDto customerDto)
+        public async Task<bool> CustomerExists(Guid customerId)
+        {
+            try
+            {
+                await GetCustomerById(customerId);
+                return true;
+            }
+            catch (NotFoundException e)
+            {
+                return false;
+            }
+        }
+        
+        public async Task UpdateCustomer(string pathCustomerId, CustomerDto customerDto)
         {
             _logger.LogInformation("UpdateCustomer started with: pathCustomerId={PathCustomerId}, customerDto={@CustomerDto}",
                 pathCustomerId, customerDto);
-
-            var validationErrors = GetValidationErrors(customerDto);
-            if (validationErrors.Count > 0)
-            {
-                throw new BadRequestException("Customer not valid: " + string.Join(", ", validationErrors));
-            }
+            
             if (!Guid.TryParse(pathCustomerId, out var parsedPathCustomerId))
             {
                 throw new BadRequestException("path customer id is invalid. pathCustomerId = " + pathCustomerId);
             }
-
-            if (!parsedPathCustomerId.Equals(customerDto.Id))
+            
+            var validStatuses = new[] { "Active", "Non-Active", "Lead" };
+            if (!string.IsNullOrWhiteSpace(customerDto.Status) && !validStatuses.Contains(customerDto.Status))
             {
-                throw new BadRequestException("path customer id or path opportunity id do not match the value in dto. pathCustomerId = " + pathCustomerId + " dto = " + customerDto);
+                throw new BadRequestException("Invalid status provided. pathCustomerId = " + pathCustomerId + " status=" + customerDto.Status);
             }
+            
+            
 
-            var customer = _customerDao.GetCustomerById(customerDto.Id);
+            var customer = await _customerDao.GetCustomerById(parsedPathCustomerId);
             if (customer == null)
             {
-                throw new NotFoundException("customer not found: " + customerDto);
+                throw new NotFoundException("Customer not found for customerId: " + pathCustomerId);
             }
+            
+            customer.Name = string.IsNullOrWhiteSpace(customerDto.Name) ? customer.Name : customerDto.Name;
+            customer.Status = string.IsNullOrWhiteSpace(customerDto.Status) ? customer.Status : customerDto.Status;
+            customer.Email = string.IsNullOrWhiteSpace(customerDto.Email) ? customer.Email : customerDto.Email;
+            customer.PhoneNumber = string.IsNullOrWhiteSpace(customerDto.PhoneNumber) ? customer.PhoneNumber : customerDto.PhoneNumber;
 
-            _customerDao.UpdateCustomer(new Customer
-            {
-                Id = customerDto.Id,
-                Name = customerDto.Name,
-                Status = customerDto.Status,
-                Email = customerDto.Email,
-                PhoneNumber = customerDto.PhoneNumber,
-                CreatedAt = customerDto.CreatedAt,
-                UpdatedAt = DateTime.UtcNow
-            });
+            customer.UpdatedAt = DateTime.UtcNow;
+            
+            await _customerDao.UpdateCustomer(customer);
 
-            _logger.LogInformation("UpdateCustomer completed successfully for customerId={CustomerId}", customerDto.Id);
-        }
-
-        private static List<string> GetValidationErrors(CustomerDto customerDto)
-        {
-            var validationErrors = new List<string>();
-
-            if (string.IsNullOrWhiteSpace(customerDto.Name))
-            {
-                validationErrors.Add("Customer name cannot be empty");
-            }
-
-            if (string.IsNullOrWhiteSpace(customerDto.Email) || !IsValidEmail(customerDto.Email))
-            {
-                validationErrors.Add("Invalid email address");
-            }
-
-            if (string.IsNullOrWhiteSpace(customerDto.PhoneNumber))
-            {
-                validationErrors.Add("Phone number cannot be empty");
-            }
-            return validationErrors;
-        }
-
-        private static bool IsValidEmail(string email)
-        {
-            // Basic email validation logic
-            return !string.IsNullOrWhiteSpace(email) && email.Contains("@") && email.Contains(".");
+            _logger.LogInformation("UpdateCustomer completed successfully for customerId={CustomerId}", pathCustomerId);
         }
     }
+    
+    
 }

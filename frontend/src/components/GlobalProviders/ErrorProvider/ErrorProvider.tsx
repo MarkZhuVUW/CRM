@@ -6,16 +6,11 @@ import {
   SyntheticEvent,
 } from "react";
 import { default as MuiSnackbar } from "@mui/material/Snackbar";
-import {
-  Box,
-  Collapse,
-  IconButton,
-  Typography,
-  AlertTitle,
-} from "@mui/material";
+import { Collapse, IconButton, Typography, AlertTitle } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import CloseIcon from "@mui/icons-material/Close";
 import { APIError } from "./types";
+import { Box } from "@mui/system";
 interface ErrorContext {
   error: APIError | null;
   setError: React.Dispatch<React.SetStateAction<APIError | null>>;

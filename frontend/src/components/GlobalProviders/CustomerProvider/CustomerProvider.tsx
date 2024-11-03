@@ -1,54 +1,80 @@
-import React, { createContext, ReactNode, useContext } from "react";
-import { get, handleError, put } from "@frontend-ui/utils/apiUtils";
+import React, { createContext, ReactNode, useContext, useState } from "react";
+import {
+  get,
+  handleError,
+  patch,
+  post,
+  put,
+} from "@frontend-ui/utils/apiUtils";
 import {
   Customer,
   SalesOpportunity,
-  PaginatedResponse,
   GetCustomersRequest,
   GetCustomersResponse,
-  CustomerPutRequest,
-  CustomerPutResponse,
+  SalesOpportunityPostRequest,
+  SalesOpportunityPostResponse,
   SalesOpportunityPutRequest,
   SalesOpportunityPutResponse,
   GetSalesOpportunitiesRequest,
   GetSalesOpportunitiesResponse,
+  GetCustomerByIdResponse,
+  CustomerPatchResponse,
+  GetCustomerByIdRequest,
+  CustomerPatchRequest,
 } from "./types";
 import { useError } from "../ErrorProvider";
 
-// Define a type for the context value
 interface CustomerContext {
+  currentCustomer: Customer | null;
+  setCurrentCustomer: React.Dispatch<React.SetStateAction<Customer | null>>;
   getCustomers: (
     pageNumber?: number,
     pageSize?: number,
     filter?: string,
     sort?: string,
-  ) => Promise<PaginatedResponse<Customer>>;
-  getSalesOpportunities: (
-    customerId: string,
-  ) => Promise<PaginatedResponse<SalesOpportunity>>;
-  updateCustomer: (
+    sortDirection?: string,
+  ) => Promise<GetCustomersResponse>;
+  getCustomerById: (customerId: string) => Promise<GetCustomerByIdResponse>;
+  patchCustomer: (
     customerId: string,
     customerData: Customer,
-  ) => Promise<CustomerPutResponse>;
+  ) => Promise<CustomerPatchResponse>;
+  getSalesOpportunities: (
+    customerId: string,
+  ) => Promise<GetSalesOpportunitiesResponse>;
   updateSalesOpportunity: (
     customerId: string,
     salesOpportunityId: string,
     salesOpportunityData: SalesOpportunity,
   ) => Promise<SalesOpportunityPutResponse>;
+  createSalesOpportunity: (
+    customerId: string,
+    salesOpportunityData: SalesOpportunity,
+  ) => Promise<SalesOpportunityPostResponse>;
 }
 
 const CustomerContext = createContext<CustomerContext>({
+  currentCustomer: null,
+  setCurrentCustomer: () => {
+    throw new Error("setCurrentCustomer function not in context.");
+  },
   getCustomers: async () => {
     throw new Error("getCustomers function not in context.");
   },
   getSalesOpportunities: async () => {
     throw new Error("getSalesOpportunities function not in context.");
   },
-  updateCustomer: async () => {
-    throw new Error("updateCustomer function not in context.");
-  },
   updateSalesOpportunity: async () => {
     throw new Error("updateSalesOpportunity function not in context.");
+  },
+  createSalesOpportunity: async () => {
+    throw new Error("createSalesOpportunity function not in context.");
+  },
+  getCustomerById: async () => {
+    throw new Error("getCustomerById function not in context.");
+  },
+  patchCustomer: async () => {
+    throw new Error("patchCustomer function not in context.");
   },
 });
 
@@ -62,68 +88,80 @@ export const useCustomer = () => {
 
 const CustomerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { setError } = useError();
-
+  const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
   const getCustomers = async (
     pageNumber: number = 1,
     pageSize: number = 5,
     filter: string = "",
     sort: string = "",
-  ): Promise<PaginatedResponse<Customer>> => {
+    sortDirection: string = "asc",
+  ): Promise<GetCustomersResponse> => {
     try {
       const request: GetCustomersRequest = {
-        url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}&sort=${sort}`,
+        url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}&sort=${sort}&sortDirection=${sortDirection}
+        `,
       };
-      const response = await get<GetCustomersRequest, GetCustomersResponse>(
-        request,
-      );
+      const response = await get<GetCustomersRequest>(request);
       return response.data;
     } catch (error) {
       console.log(error);
       const apiError = handleError(error);
       setError(apiError);
-      return { data: [], totalCount: 0 }; 
+      throw new Error("getCustomers failed.", { cause: error });
+    }
+  };
+
+  const getCustomerById = async (
+    customerId: string,
+  ): Promise<GetCustomerByIdResponse> => {
+    try {
+      const request: GetCustomerByIdRequest = {
+        url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers/${customerId}`,
+      };
+      const response = await get<GetCustomerByIdRequest>(request);
+      return response;
+    } catch (error) {
+      console.log(error);
+      const apiError = handleError(error);
+      setError(apiError);
+      throw new Error("getCustomerById failed.", { cause: error });
+    }
+  };
+
+  const patchCustomer = async (
+    customerId: string,
+    customerData: Customer,
+  ): Promise<CustomerPatchResponse> => {
+    try {
+      const request: CustomerPatchRequest = {
+        url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers/${customerId}`,
+        data: customerData,
+      };
+      const response = await patch<CustomerPatchRequest>(request);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      const apiError = handleError(error);
+      setError(apiError);
+      throw new Error("patchCustomer failed.", { cause: error });
     }
   };
 
   const getSalesOpportunities = async (
     customerId: string,
-  ): Promise<PaginatedResponse<SalesOpportunity>> => {
+  ): Promise<GetSalesOpportunitiesResponse> => {
     try {
       const request: GetSalesOpportunitiesRequest = {
         url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers/${customerId}/salesopportunities`,
       };
-      const response = await get<
-        GetSalesOpportunitiesRequest,
-        GetSalesOpportunitiesResponse
-      >(request);
+      const response = await get<GetSalesOpportunitiesRequest>(request);
       return response.data;
     } catch (error) {
       console.log(error);
       const apiError = handleError(error);
       setError(apiError);
 
-      return { data: [], totalCount: 0 };
-    }
-  };
-
-  const updateCustomer = async (
-    customerId: string,
-    customerData: Customer,
-  ): Promise<CustomerPutResponse> => {
-    try {
-      const request: CustomerPutRequest = {
-        url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers/${customerId}`,
-        data: customerData,
-      };
-      const response = await put<CustomerPutRequest, CustomerPutResponse>(
-        request,
-      );
-      return response; 
-    } catch (error) {
-      console.log(error);
-      const apiError = handleError(error);
-      setError(apiError);
-      return { data: { success: false } };
+      throw new Error("getSalesOpportunities failed.", { cause: error });
     }
   };
 
@@ -137,26 +175,46 @@ const CustomerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers/${customerId}/salesopportunities/${salesOpportunityId}`,
         data: salesOpportunityData,
       };
-      const response = await put<
-        SalesOpportunityPutRequest,
-        SalesOpportunityPutResponse
-      >(request);
-      return response; 
+      const response = await put<SalesOpportunityPutRequest>(request);
+      return response.data;
     } catch (error) {
       console.log(error);
       const apiError = handleError(error);
       setError(apiError);
-      return { data: { success: false } };
+      throw new Error("updateSalesOpportunity failed.", { cause: error });
+    }
+  };
+
+  const createSalesOpportunity = async (
+    customerId: string,
+    salesOpportunityData: SalesOpportunity,
+  ): Promise<SalesOpportunityPostResponse> => {
+    try {
+      const request: SalesOpportunityPostRequest = {
+        url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers/${customerId}/salesopportunities`,
+        data: salesOpportunityData,
+      };
+      const response = await post<SalesOpportunityPostRequest>(request);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      const apiError = handleError(error);
+      setError(apiError);
+      throw new Error("createSalesOpportunity failed.", { cause: error });
     }
   };
 
   return (
     <CustomerContext.Provider
       value={{
+        currentCustomer,
+        setCurrentCustomer,
         getCustomers,
         getSalesOpportunities,
-        updateCustomer,
         updateSalesOpportunity,
+        createSalesOpportunity,
+        getCustomerById,
+        patchCustomer,
       }}
     >
       {children}

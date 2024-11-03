@@ -6,12 +6,12 @@ namespace CRM.Api.Models
     [Table("sales_opportunity")]
     public class SalesOpportunity
     {
-        public Guid Id { get; init; }
-        public Guid CustomerId { get; init; }
-        public string Name { get; init; }
-        public string Status { get; init; }
-        public DateTime CreatedAt { get; init; }
-        public DateTime UpdatedAt { get; init; }
+        public Guid Id { get; set; }
+        public Guid CustomerId { get; set; }
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         // Navigation property
         public Customer Customer { get; set; }
