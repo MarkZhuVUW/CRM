@@ -1,3 +1,26 @@
+## Table of Contents
+1. [Assumptions](#assumptions)
+2. [Future Improvements](#future-improvements)
+3. [API Endpoints](#api-endpoints)
+4. [Code Structure](#code-structure)
+5. [Setting Up Local Development Environment](#setting-up-local-development-environment)
+    - [Install nvm](#install-nvm)
+    - [Provision Node.js](#provision-nodejs)
+    - [Install .NET and EF CLI](#install-dotnet-and-ef-cli)
+    - [Set Up Frontend](#set-up-frontend)
+    - [Set Up Backend](#set-up-backend)
+    - [Install Docker Desktop](#install-docker-desktop)
+6. [Running the Application Locally](#running-the-application-locally)
+    - [Run PostgreSQL (Docker Compose)](#run-postgresql-docker-compose)
+    - [Run Frontend](#run-frontend)
+    - [Run Backend](#run-backend)
+7. [Testing](#testing)
+    - [Frontend Unit Tests](#frontend-unit-tests)
+    - [Frontend Linting](#frontend-linting)
+    - [Backend Unit Tests](#backend-unit-tests)
+    - [Browser End-to-End Tests](#browser-end-to-end-tests)
+8. [Q & A](#q--a)
+
 # Assumptions
 
 1. No APIs to createCustomer. Some customers and sales opportunities are preloaded into database to make testing easier
@@ -100,7 +123,7 @@ brew install docker
 
 ---
 
-How to run frontend react, backend, database locally
+# How to run frontend react, backend, database locally
 
 ## 1. Run postgres (docker-compose)
 
