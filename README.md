@@ -198,3 +198,6 @@ under project root folder:
 ##### A: Please review `Important: How to set up local development environment` section and install docker desktop.
 
 ##### A: Please make sure you use Git Bash to run the command if you are on Windows
+
+### 3. calling api from swagger UI errors out?
+##### A: Ensure you have postgres docker containers up, ensure you have followed: `3. Run backend` to preload data and schemas for the database
