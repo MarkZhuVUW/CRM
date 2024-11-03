@@ -7,7 +7,6 @@
 5. Originally I was planning on using MUI X Data Grid to display customers and sales opportunities. However the free version is very naive and after some spiking I have decided to just use plain MUI components. This does mean that the frontend is less extensible to business logic changes. For example. If customer / sales opportunity have more columns, will need to reinvent the data grid.
 6. App throughput is not heavy. Otherwise might need event-driven architecture, caches etc.
 7. error message for 400 class errors come from server side as these are normally validation errors. Display "unkown error" from frontend for 500 class errors.
-8. 
 
 # future improvements
 
