@@ -3,6 +3,14 @@
 2. App intended to only work locally. No CICD, prod deployment will be in scope.
 3. extensive logging, error handling are setup to make the codebase as production-ready as possible.
 4. Responsive design is supported for mobile devices.
+5. Originally I was planning on using MUI X Data Grid to display customers and sales opportunities. However the free version is very naive and after some spiking I have decided to just use plain MUI components. This does mean that the frontend is less extensible to business logic changes. For example. If customer / sales opportunity have more columns, will need to reinvent the data grid.
+6. App throughput is not heavy. Otherwise might need event-driven architecture, caches etc.
+
+# future improvements
+1. I have only got a few e2e tests done. Would be good to increase playwright coverage.
+2. performance tests
+3. switch to a more mature "data grid" solution for displaying rows/columns of customers etc which allows for server-side pagination, filtering, sorting etc.
+4. Implement full CICD pipeline that builds, tests, releases to prod in dockerized environment.
 
 # API endpoints
 
