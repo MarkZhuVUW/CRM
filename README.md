@@ -15,7 +15,10 @@
 3. switch to a more mature "data grid" solution for displaying rows/columns of customers etc which allows for server-side pagination, filtering, sorting etc.
 4. Implement full CICD pipeline that builds, tests, releases to prod in dockerized environment.
 
+
+
 # API endpoints
+![image](https://github.com/user-attachments/assets/82a14ee3-6ac3-405e-8861-38fe90dfa654)
 
 # Code Structure
 
@@ -136,6 +139,7 @@ dotnet run
 
 1. `cd ./frontend`
 2. `npm test`
+![image](https://github.com/user-attachments/assets/e43a16bc-c9a6-4993-92e6-f2b97d9d6431)
 
 ## Frontend linting
 
@@ -146,6 +150,7 @@ dotnet run
 
 1. `cd ./backend/CRM.Api.Tests`
 2. `dotnet test`
+![image](https://github.com/user-attachments/assets/2151adb3-26c6-4f64-ad8a-53011b2257a5)
 
 You can also manually test APIs with swagger UI
 
