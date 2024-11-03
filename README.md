@@ -1,5 +1,10 @@
 # Assumptions
-1. 
+1. No APIs to createCustomer. Some customers and sales opportunities are preloaded into database to make testing easier
+2. App intended to only work locally. No CICD, prod deployment will be in scope.
+3. extensive logging, error handling are setup to make the codebase as production-ready as possible.
+4. Responsive design is supported for mobile devices.
+
+# API endpoints
 
 # Code Structure
 
@@ -148,7 +153,7 @@ install playwright and chromium
 npx playwright install --with-deps chromium
 ```
 
-Ensure you have spinned up react, node servers & mongodb docker containers locally. If you have not, follow the `Important: How to set up local development environment` guide above.
+Ensure you have spinned up postgres, react and .Net backend locally. If you have not, follow the `Important: How to set up local development environment` guide above.
 
 under project root folder:
 

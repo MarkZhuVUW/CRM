@@ -103,7 +103,7 @@ const CustomerPage = () => {
   };
   return (
     <Container maxWidth="lg">
-      <Box mt={15}>
+      <Box mt={10}>
         <Box mb={2}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={4}>
