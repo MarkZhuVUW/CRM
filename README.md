@@ -6,12 +6,12 @@
 5. [How to set up local development environment](#how-to-set-up-local-development-environment)
     - [Install nvm](#install-nvm)
     - [Provision Node.js](#provision-nodejs)
-    - [Install .NET and EF CLI](#install-dotnet-and-ef-cli)
+    - [Install .NET and EF CLI](#install-dotnet)
     - [Set Up Frontend](#set-up-frontend)
     - [Set Up Backend](#set-up-backend)
     - [Install Docker Desktop](#install-docker-desktop)
 6. [Running the Application Locally](#running-the-application-locally)
-    - [Run PostgreSQL (Docker Compose)](#run-postgresql-docker-compose)
+    - [Run PostgreSQL](#run-postgresql)
     - [Run Frontend](#run-frontend)
     - [Run Backend](#run-backend)
 7. [Testing](#testing)
@@ -94,14 +94,14 @@ nvm use 20.11.1
 dotnet tool install --global dotnet-ef
 ```
 
-## setup frontend react project
+## setup frontend
 
 ```bash
 cd ./frontend
 npm install
 ```
 
-## setup backend project
+## setup backend
 
 ```bash
 cd ../backend
@@ -123,9 +123,9 @@ brew install docker
 
 ---
 
-# How to run frontend react, backend, database locally
+# Running the Application Locally
 
-## 1. Run postgres (docker-compose)
+## Run postgres
 
 Run this from Git Bash if you use Windows
 
@@ -144,14 +144,14 @@ User name: postgres
 Password: postgres
 ![image](https://github.com/user-attachments/assets/9f632165-2979-484b-b4dd-5171992109c8)
 
-## 2. Run frontend react
+## Run frontend
 
 ```bash
 cd ./frontend
 npm run dev
 ```
 
-## 3. Run backend
+## Run backend
 ### IMPORTANT: First time running backend you need to run:
 ```
 dotnet ef database update
@@ -166,7 +166,7 @@ cd ./backend/CRM.Api
 dotnet run
 ```
 
-# How to test the code
+# Testing
 
 ## Frontend unit tests
 
@@ -185,14 +185,14 @@ dotnet run
 2. `dotnet test`
 ![image](https://github.com/user-attachments/assets/2151adb3-26c6-4f64-ad8a-53011b2257a5)
 
-You can also manually test APIs with swagger UI
+## You can also manually test APIs with swagger UI
 
 1. spin up backend
 2. access `http://localhost:5106/swagger/index.html`
 
 ## Browser end-to-end tests
 
-### Note that we support only `Chrome` at this time
+Note that we support only `Chrome` at this time
 
 ### Prerequisite
 
