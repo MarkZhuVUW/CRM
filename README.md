@@ -9,12 +9,14 @@
     | CRM.Api.Tests - backend unit tests with MSTest
 > e2eTests - playwright e2e tests(chrome only)
     | .env - local playwright configs
+    | tests - e2e test cases
 > frontend - Vite, React, Mui 5
     | .env local frontend config/creds
     | package.json - frontend dependencies
+    | tests - jest unit tests
 > scripts
     | start.sh - script to spin up postgres as docker container locally
-.env - MONGODB local config/creds
+.env - Postgres local config/creds
 docker-compose.yml - docker-compose for LOCAL environment
 Dockerfile - postgres & pgadmin docker container
 ```
