@@ -4,7 +4,7 @@ import {
   useMuiTheme,
 } from "@frontend-ui/components/GlobalProviders";
 
-export const ThemeProviderDebug = ({ themeMode }) => {
+export const ThemeProviderDebug = ({ themeMode }: any) => {
   const { theme, setMuiTheme } = useMuiTheme();
   useEffect(() => {
     if (themeMode) setMuiTheme(themeMode);
@@ -12,7 +12,7 @@ export const ThemeProviderDebug = ({ themeMode }) => {
   return <>{theme}</>;
 };
 
-export const LocalStorageProviderDebug = ({ functionToDebug }) => {
+export const LocalStorageProviderDebug = ({ functionToDebug }: any) => {
   const { keys, setItem, removeItem, getItem } = useLocalStorage();
   const [isLocalStorageEventSuccessful, setIsLocalStorageEventSuccessful] =
     useState(false);

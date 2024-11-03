@@ -1,3 +1,5 @@
+# Assumptions
+1. 
 
 # Code Structure
 
@@ -40,8 +42,10 @@ nvm use 20.11.1
 ```
 
 ## Install dotnet
+
 1. dotnet cli
 2. dotnet ef
+
 ```bash
 dotnet tool install --global dotnet-ef
 ```
@@ -114,6 +118,11 @@ dotnet run
 
 1. `cd ./frontend`
 2. `npm test`
+
+## Frontend linting
+
+1. `cd ./frontend`
+2. `npm run lint`
 
 ## backend unit tests
 

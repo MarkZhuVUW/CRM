@@ -382,7 +382,7 @@ namespace CRM.Api.Tests.Services
                 _customerService.UpdateCustomer(customerId.ToString(), dto));
 
             // Then
-            Assert.AreEqual("Invalid status provided. pathCustomerId = " + customerId, exception.Message);
+            Assert.AreEqual("Invalid status provided. pathCustomerId = " + customerId + " status=" + dto.Status, exception.Message);
         }
     }
 }
