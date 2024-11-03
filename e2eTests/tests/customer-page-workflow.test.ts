@@ -157,10 +157,10 @@ test.describe("Customer Page Tests", () => {
   test("should sort customers by name in both ascending order and descending order.", async ({
     page,
   }) => {
-    const filterContainer = page.locator('[aria-label="Sort By"]');
-    await filterContainer.waitFor({ state: "visible" });
+    const sortContainer = page.locator('[aria-label="Sort By"]');
+    await sortContainer.waitFor({ state: "visible" });
 
-    await filterContainer.click();
+    await sortContainer.click();
     const sortByNameOption = page.locator('[aria-label="Sort By Name"]');
     await sortByNameOption.click();
 
@@ -186,5 +186,59 @@ test.describe("Customer Page Tests", () => {
     await expect(page.locator(`text=Emma Davis`)).toBeHidden();
     await expect(page.locator(`text=Alice Williams`)).toBeHidden();
 
+  });
+
+  test("should sort customers by name, filter by name", async ({
+    page,
+  }) => {
+    // sort by name
+    const sortContainer = page.locator('[aria-label="Sort By"]');
+    await sortContainer.waitFor({ state: "visible" });
+
+    await sortContainer.click();
+    const sortByNameOption = page.locator('[aria-label="Sort By Name"]');
+    await sortByNameOption.click();
+
+    // filter by status Lead
+    const filterStatusContainer = page.locator('[aria-label="Filter by Status"]');
+    await filterStatusContainer.waitFor({ state: "visible" });
+
+    await filterStatusContainer.click();
+    const leadOption = page.locator('[aria-label="Filter by Status Lead"]');
+    await leadOption.click();
+
+
+    await expect(page.locator(`text=Charlie Brown`)).toBeVisible();
+    await expect(page.locator(`text=Grace Lee`)).toBeVisible();
+    await expect(page.locator(`text=Jack Taylor`)).toBeVisible();
+    await expect(page.locator(`text=Jane Smith`)).toBeVisible();
+    await expect(page.locator(`text=Alice Williams`)).toBeHidden();
+  });
+
+  test("should sort customers by name, filter by name", async ({
+    page,
+  }) => {
+    // sort by name
+    const sortContainer = page.locator('[aria-label="Sort By"]');
+    await sortContainer.waitFor({ state: "visible" });
+
+    await sortContainer.click();
+    const sortByNameOption = page.locator('[aria-label="Sort By Name"]');
+    await sortByNameOption.click();
+
+    // filter by status Lead
+    const filterStatusContainer = page.locator('[aria-label="Filter by Status"]');
+    await filterStatusContainer.waitFor({ state: "visible" });
+
+    await filterStatusContainer.click();
+    const leadOption = page.locator('[aria-label="Filter by Status Lead"]');
+    await leadOption.click();
+
+
+    await expect(page.locator(`text=Charlie Brown`)).toBeVisible();
+    await expect(page.locator(`text=Grace Lee`)).toBeVisible();
+    await expect(page.locator(`text=Jack Taylor`)).toBeVisible();
+    await expect(page.locator(`text=Jane Smith`)).toBeVisible();
+    await expect(page.locator(`text=Alice Williams`)).toBeHidden();
   });
 });
