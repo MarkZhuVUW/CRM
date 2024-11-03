@@ -111,6 +111,7 @@ Run this from Git Bash if you use Windows
 cd ./scripts
 sh start.sh
 ```
+![image](https://github.com/user-attachments/assets/594ca6d3-aec1-4abb-8db0-ce2946761972)
 
 Open http://localhost:8888/ Login with user-name@domain-name.com/pgadminpassword
 Register server:
@@ -175,6 +176,7 @@ under project root folder:
 
 1. `cd e2eTests`
 2. `npm run test:e2e`
+![image](https://github.com/user-attachments/assets/2ccc9316-e3db-4e2b-a192-5fd4b19574f3)
 
 # Q & A
 
