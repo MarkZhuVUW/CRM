@@ -3,7 +3,7 @@
 2. [Future Improvements](#future-improvements)
 3. [API Endpoints](#api-endpoints)
 4. [Code Structure](#code-structure)
-5. [Setting Up Local Development Environment](#setting-up-local-development-environment)
+5. [How to set up local development environment](#how-to-set-up-local-development-environment)
     - [Install nvm](#install-nvm)
     - [Provision Node.js](#provision-nodejs)
     - [Install .NET and EF CLI](#install-dotnet-and-ef-cli)
@@ -63,7 +63,7 @@ docker-compose.yml - docker-compose for LOCAL environment
 Dockerfile - postgres & pgadmin docker container
 ```
 
-# Important: How to set up local development environment
+# How to set up local development environment
 
 ## Install nvm
 
