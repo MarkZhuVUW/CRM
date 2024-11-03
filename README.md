@@ -119,6 +119,7 @@ Server name: test
 Name: postgres
 User name: postgres
 Password: postgres
+![image](https://github.com/user-attachments/assets/9f632165-2979-484b-b4dd-5171992109c8)
 
 ## 2. Run frontend react
 
@@ -128,6 +129,14 @@ npm run dev
 ```
 
 ## 3. Run backend
+### IMPORTANT: First time running backend you need to run:
+```
+dotnet ef database update
+```
+to apply database migrations in order to preload some data for testing.
+dbContext is under `backend/Data/CrmDbContext.cs`
+Once data is loaded, on pgadmin we should see something like this:
+![image](https://github.com/user-attachments/assets/7e05dd10-61c4-4595-b952-9433587399c1)
 
 ```bash
 cd ./backend/CRM.Api
