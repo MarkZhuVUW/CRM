@@ -98,8 +98,7 @@ const CustomerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   ): Promise<GetCustomersResponse> => {
     try {
       const request: GetCustomersRequest = {
-        url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}&sort=${sort}&sortDirection=${sortDirection}
-        `,
+        url: `${import.meta.env.VITE_BACKEND_API_BASE_URL}/api/customers?pageNumber=${pageNumber}&pageSize=${pageSize}&filter=${filter}&sort=${sort}&sortDirection=${sortDirection}`,
       };
       const response = await get<GetCustomersRequest>(request);
       return response.data;
