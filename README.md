@@ -1,3 +1,26 @@
+## Table of Contents
+1. [Assumptions](#assumptions)
+2. [Future Improvements](#future-improvements)
+3. [API Endpoints](#api-endpoints)
+4. [Code Structure](#code-structure)
+5. [How to set up local development environment](#how-to-set-up-local-development-environment)
+    - [Install nvm](#install-nvm)
+    - [Provision Node.js](#provision-nodejs)
+    - [Install .NET and EF CLI](#install-dotnet)
+    - [Set Up Frontend](#set-up-frontend)
+    - [Set Up Backend](#set-up-backend)
+    - [Install Docker Desktop](#install-docker-desktop)
+6. [Running the Application Locally](#running-the-application-locally)
+    - [Run PostgreSQL](#run-postgresql)
+    - [Run Frontend](#run-frontend)
+    - [Run Backend](#run-backend)
+7. [Testing](#testing)
+    - [Frontend Unit Tests](#frontend-unit-tests)
+    - [Frontend Linting](#frontend-linting)
+    - [Backend Unit Tests](#backend-unit-tests)
+    - [Browser End-to-End Tests](#browser-end-to-end-tests)
+8. [Q & A](#q--a)
+
 # Assumptions
 
 1. No APIs to createCustomer. Some customers and sales opportunities are preloaded into database to make testing easier
@@ -15,7 +38,10 @@
 3. switch to a more mature "data grid" solution for displaying rows/columns of customers etc which allows for server-side pagination, filtering, sorting etc.
 4. Implement full CICD pipeline that builds, tests, releases to prod in dockerized environment.
 
+
+
 # API endpoints
+![image](https://github.com/user-attachments/assets/82a14ee3-6ac3-405e-8861-38fe90dfa654)
 
 # Code Structure
 
@@ -37,7 +63,7 @@ docker-compose.yml - docker-compose for LOCAL environment
 Dockerfile - postgres & pgadmin docker container
 ```
 
-# Important: How to set up local development environment
+# How to set up local development environment
 
 ## Install nvm
 
@@ -68,14 +94,14 @@ nvm use 20.11.1
 dotnet tool install --global dotnet-ef
 ```
 
-## setup frontend react project
+## setup frontend
 
 ```bash
 cd ./frontend
 npm install
 ```
 
-## setup backend project
+## setup backend
 
 ```bash
 cd ../backend
@@ -97,9 +123,9 @@ brew install docker
 
 ---
 
-How to run frontend react, backend, database locally
+# Running the Application Locally
 
-## 1. Run postgres (docker-compose)
+## Run postgres
 
 Run this from Git Bash if you use Windows
 
@@ -108,6 +134,7 @@ Run this from Git Bash if you use Windows
 cd ./scripts
 sh start.sh
 ```
+![image](https://github.com/user-attachments/assets/594ca6d3-aec1-4abb-8db0-ce2946761972)
 
 Open http://localhost:8888/ Login with user-name@domain-name.com/pgadminpassword
 Register server:
@@ -115,27 +142,37 @@ Server name: test
 Name: postgres
 User name: postgres
 Password: postgres
+![image](https://github.com/user-attachments/assets/9f632165-2979-484b-b4dd-5171992109c8)
 
-## 2. Run frontend react
+## Run frontend
 
 ```bash
 cd ./frontend
 npm run dev
 ```
 
-## 3. Run backend
+## Run backend
+### IMPORTANT: First time running backend you need to run:
+```
+dotnet ef database update
+```
+to apply database migrations in order to preload some data for testing.
+dbContext is under `backend/Data/CrmDbContext.cs`
+Once data is loaded, on pgadmin we should see something like this:
+![image](https://github.com/user-attachments/assets/7e05dd10-61c4-4595-b952-9433587399c1)
 
 ```bash
 cd ./backend/CRM.Api
 dotnet run
 ```
 
-# How to test the code
+# Testing
 
 ## Frontend unit tests
 
 1. `cd ./frontend`
 2. `npm test`
+![image](https://github.com/user-attachments/assets/e43a16bc-c9a6-4993-92e6-f2b97d9d6431)
 
 ## Frontend linting
 
@@ -146,15 +183,16 @@ dotnet run
 
 1. `cd ./backend/CRM.Api.Tests`
 2. `dotnet test`
+![image](https://github.com/user-attachments/assets/2151adb3-26c6-4f64-ad8a-53011b2257a5)
 
-You can also manually test APIs with swagger UI
+## You can also manually test APIs with swagger UI
 
 1. spin up backend
 2. access `http://localhost:5106/swagger/index.html`
 
 ## Browser end-to-end tests
 
-### Note that we support only `Chrome` at this time
+Note that we support only `Chrome` at this time
 
 ### Prerequisite
 
@@ -170,6 +208,7 @@ under project root folder:
 
 1. `cd e2eTests`
 2. `npm run test:e2e`
+![image](https://github.com/user-attachments/assets/2ccc9316-e3db-4e2b-a192-5fd4b19574f3)
 
 # Q & A
 
@@ -182,3 +221,6 @@ under project root folder:
 ##### A: Please review `Important: How to set up local development environment` section and install docker desktop.
 
 ##### A: Please make sure you use Git Bash to run the command if you are on Windows
+
+### 3. calling api from swagger UI errors out?
+##### A: Ensure you have postgres docker containers up, ensure you have followed: `3. Run backend` to preload data and schemas for the database
