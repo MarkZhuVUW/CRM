@@ -215,7 +215,7 @@ test.describe("Customer Page Tests", () => {
     await expect(page.locator(`text=Alice Williams`)).toBeHidden();
   });
 
-  test("should sort customers by name, filter by name", async ({
+  test("should sort customers by name, filter by name and status", async ({
     page,
   }) => {
     // sort by name
